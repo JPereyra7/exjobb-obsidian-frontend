@@ -15,6 +15,10 @@ export const SignInSignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  const navigateDashboard = () => {
+    navigate("/dashboard");
+  };
+
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -22,13 +26,9 @@ export const SignInSignUp = () => {
 
     try {
       console.log("Attempting sign in with email:", email);
-
     } catch (error) {
       console.error("Sign in error:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to sign in"
-      );
-
+      setError(error instanceof Error ? error.message : "Failed to sign in");
     } finally {
       setLoading(false);
     }
@@ -40,7 +40,6 @@ export const SignInSignUp = () => {
     setError(null);
 
     if (!fullName.trim()) {
-
       setError("Full name is required");
       setLoading(false);
       return;
@@ -49,19 +48,14 @@ export const SignInSignUp = () => {
     try {
       console.log("Attempting sign up for:", email);
 
-
       // Reset form and switch to sign-in mode
       setEmail("");
       setPassword("");
       setFullName("");
       setIsSignUp(false);
-
     } catch (error) {
       console.error("Sign up error:", error);
-      setError(
-        error instanceof Error ? error.message : "Failed to sign up"
-      );
-
+      setError(error instanceof Error ? error.message : "Failed to sign up");
     } finally {
       setLoading(false);
     }
@@ -70,6 +64,8 @@ export const SignInSignUp = () => {
   const handleRecoverPassword = () => {
     navigate("/recover-password");
   };
+  //DETTA LÖSER DU SEN!!!!!
+  console.log(handleRecoverPassword);
 
   return (
     <div className="flex items-center justify-center h-screen">
@@ -84,7 +80,10 @@ export const SignInSignUp = () => {
           </div>
         )}
 
-        <form onSubmit={isSignUp ? handleSignUp : handleSignIn} className="space-y-4">
+        <form
+          onSubmit={isSignUp ? handleSignUp : handleSignIn}
+          className="space-y-4"
+        >
           {isSignUp && (
             <input
               type="text"
@@ -154,7 +153,7 @@ export const SignInSignUp = () => {
               </p>
               <p>
                 <button
-                  onClick={handleRecoverPassword}
+                  onClick={navigateDashboard}
                   className="text-blue-500 hover:underline"
                   disabled={loading}
                 >

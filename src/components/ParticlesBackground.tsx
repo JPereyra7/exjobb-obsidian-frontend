@@ -1,12 +1,19 @@
 import { useEffect } from "react";
-import particlesConfig from "../../src/particles-config.json";
 
 const ParticlesBackground = () => {
   useEffect(() => {
-    // Kontrollera om `particlesJS` är tillgängligt globalt
-    if (window.particlesJS) {
-        window.particlesJS("tsparticles", particlesConfig);
-    }
+    // Dynamiskt ladda config-filen från public-mappen
+    const loadParticlesConfig = async () => {
+      const response = await fetch("/particles-config.json"); // Public mappen root
+      const config = await response.json();
+
+      // Kontrollera om `particlesJS` är tillgängligt globalt
+      if (window.particlesJS) {
+        window.particlesJS("tsparticles", config);
+      }
+    };
+
+    loadParticlesConfig();
   }, []);
 
   return (

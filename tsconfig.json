@@ -1,4 +1,10 @@
 {
+  "compilerOptions": {
+    "baseUrl": ".", // This makes imports relative to the project root
+    "paths": {
+      "@/*": ["./*"] // This sets up the alias ShadCN requires
+    }
+  },
   "files": [],
   "references": [
     { "path": "./tsconfig.app.json" },

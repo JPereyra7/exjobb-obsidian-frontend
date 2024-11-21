@@ -1,0 +1,75 @@
+/* Background Wrapper with Dark Blue Gradient */
+.backgroundWrapper {
+    background: linear-gradient(135deg, #0f172a, #1e293b); /* Tailwind Slate-900 to Slate-800 */
+    display: flex;
+    flex-direction: column;
+    width: 100vw;
+    height: 100vh;
+    color: #f8fafc; /* Slate-100 for main text */
+    overflow: hidden;
+    z-index: 0;
+  }
+  
+  /* Accent Colors and Effects */
+  .accentText {
+    color: #38bdf8; /* Tailwind Sky-400 for light blue accents */
+    font-size: 1.5em;
+  }
+  
+  .loader p {
+    color: #38bdf8; /* Matches accent color for loading text */
+  }
+  
+  .loadingBar {
+    width: 160px;
+    height: 8px;
+    background-color: #1e293b;
+    margin: 0 auto 10px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(56, 189, 248, 0.5); /* Light blue glow */
+  }
+  
+  .loadingBar::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #38bdf8, #0ea5e9, #38bdf8);
+    animation: loading 2.5s linear infinite;
+  }
+  
+  @keyframes loading {
+    0% { left: -100%; }
+    100% { left: 100%; }
+  }
+  
+  /* Vertical Marker Container */
+  .verticalMarkers {
+    position: absolute;
+    right: 10px;
+    top: 20px;
+    font-size: 0.875em;
+    color: #64748b; /* Slate-500 for subtle text */
+  }
+  
+  .marker {
+    display: block;
+    margin: 15px 0;
+  }
+  
+  .marker::before {
+    content: attr(data-date);
+    color: #38bdf8;
+  }
+  
+  /* SVG Scaling and Transition */
+  .imageContainer svg {
+    transition: transform 0.3s ease;
+  }
+  
+  .imageContainer svg:hover {
+    transform: scale(1.05);
+  }
+  

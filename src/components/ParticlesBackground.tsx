@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 
+
 const ParticlesBackground = () => {
   useEffect(() => {
     // Dynamiskt ladda config-filen från public-mappen

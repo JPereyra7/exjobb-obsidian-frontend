@@ -1,6 +1,6 @@
 // SignInSignUp.tsx
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 // import { supabase } from "../supabaseClient";
 // import { toast } from "sonner";
@@ -61,7 +61,7 @@ export const SignInSignUp = () => {
       setError(
         error instanceof Error ? error.message : "Failed to sign up"
       );
-      
+
     } finally {
       setLoading(false);
     }

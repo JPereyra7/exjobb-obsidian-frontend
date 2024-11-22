@@ -35,7 +35,7 @@ export const Dashboard = () => {
       }
     };
     getData();
-  }, []);
+  }, [BASE_URL]);
 
   // Calculate the total number of pages
   const totalPages = Math.ceil(listings.length / itemsPerPage);
@@ -125,3 +125,4 @@ export const Dashboard = () => {
     </>
   );
 };
+ 

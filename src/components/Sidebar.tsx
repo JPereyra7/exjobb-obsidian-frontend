@@ -27,10 +27,10 @@ export function SidebarComponent() {
   };
 
   return (
-    <div className="flex h-screen rounded-sm dark">
+    <div className="flex-shrink-0 dark">
       <Sidebar
         aria-label="Expandable sidebar"
-        className={`transition-all duration-300 ${
+        className={`transition-all duration-300 min-h-full ${
           isExpanded ? "w-64" : "w-16"
         }`}
       >
@@ -67,10 +67,14 @@ export function SidebarComponent() {
             {/* Properties Section */}
             {isExpanded ? (
               <Sidebar.Collapse label="Properties" icon={GoDatabase}>
-                <Sidebar.Item className="cursor-pointer" icon={RiAddBoxLine}>New Listing</Sidebar.Item>
+                <Sidebar.Item
+                  className="cursor-pointer"
+                  icon={RiAddBoxLine}
+                >
+                  New Listing
+                </Sidebar.Item>
               </Sidebar.Collapse>
             ) : (
-
               <Sidebar.Item icon={GoDatabase} />
             )}
 

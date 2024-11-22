@@ -69,7 +69,7 @@ export const SignInSignUp = () => {
 
   return (
     <div className="flex flex-col items-center justify-center h-screen">
-      <div className="mb-[13em] lg:mb-80 bg-[#030714] shadow-2xl shadow-teal-100 rounded-lg p-8 max-w-sm w-[85%] z-10">
+      <div className="mb-[15em] lg:mb-80 bg-[#030714] shadow-2xl shadow-teal-100 rounded-lg p-8 max-w-sm w-[85%] z-10">
         <h2 className="text-center text-2xl font-semibold mb-6">
           {isSignUp ? "Create an account" : "Sign In"}
         </h2>

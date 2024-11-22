@@ -8,7 +8,7 @@ export const Home = () => {
     <div className="backgroundWrapper">
       <ParticlesBackground />
       <div className="flex items-start justify-start">
-        <img className="w-32 md:w-48 ml-6" src={Obsidian} alt="Logo" />
+        <img className="w-40 md:w-52 ml-6" src={Obsidian} alt="Logo" />
       </div>
       <div className="flex flex-grow justify-center items-center">
         <SignInSignUp />

@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-// import { supabase } from "../supabaseClient";
-// import { toast } from "sonner";
+import { toast } from "sonner";
+import { supabase } from "../supabaseClient";
 // import { useSupabaseUser } from "../context/SupabaseUserContext";
 
 export const SignInSignUp = () => {
@@ -14,41 +14,57 @@ export const SignInSignUp = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // const { user } = useSupabaseUser();
 
   const navigateDashboard = () => {
     navigate("/dashboard");
-  };
-
-  const handleSignIn = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-
-    try {
-      console.log("Attempting sign in with email:", email);
-    } catch (error) {
-      console.error("Sign in error:", error);
-      setError(error instanceof Error ? error.message : "Failed to sign in");
-    } finally {
-      setLoading(false);
-    }
   };
 
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-
+  
     if (!fullName.trim()) {
-      setError("Full name is required");
+      toast.error("Full name is required");
       setLoading(false);
       return;
     }
-
+  
     try {
-      console.log("Attempting sign up for:", email);
-
-      // Reset form and switch to sign-in mode
+      // Split full name into first and last names since thats their names in the db
+      const [firstname, ...surnameParts] = fullName.trim().split(" ");
+      const surname = surnameParts.join(" ");
+  
+      // Signup
+      const { data, error } = await supabase.auth.signUp({
+        email,
+        password,
+      });
+  
+      if (error) throw error;
+  
+      if (!data.user) {
+        throw new Error("Sign-up successful, but no user returned");
+      }
+  
+      console.log("Sign up successful, creating profile for:", data.user.id);
+  
+      // Supabase inserting user to db
+      const { error: profileError } = await supabase.from("users").insert({
+        id: data.user.id,
+        email,
+        firstname,
+        surname,
+        created_at: new Date().toISOString(),
+      });
+  
+      if (profileError) throw profileError;
+  
+      console.log("Profile created successfully for:", data.user.id);
+      toast.success("Account created successfully! Please log in.");
+  
+      // Reset form
       setEmail("");
       setPassword("");
       setFullName("");
@@ -56,10 +72,43 @@ export const SignInSignUp = () => {
     } catch (error) {
       console.error("Sign up error:", error);
       setError(error instanceof Error ? error.message : "Failed to sign up");
+      toast.error(error instanceof Error ? error.message : "Sign-up failed");
     } finally {
       setLoading(false);
     }
   };
+
+  const handleSignIn = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+  
+    try {
+      // Attempt to sign in
+      const { data, error } = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+  
+      if (error) throw error;
+  
+      if (data.user) {
+        console.log("Sign in successful:", data.user);
+        toast.success("Signed in successfully!");
+        navigateDashboard();
+      } else {
+        throw new Error("Unexpected error: No user returned from sign-in");
+      }
+    } catch (error) {
+      console.error("Sign in error:", error);
+      setError(error instanceof Error ? error.message : "Failed to sign in");
+      toast.error(error instanceof Error ? error.message : "Sign-in failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  
 
   const handleRecoverPassword = () => {
     navigate("/recover-password");

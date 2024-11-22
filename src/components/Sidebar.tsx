@@ -1,14 +1,15 @@
 import { useState } from "react";
 import { Sidebar } from "flowbite-react";
+import { PiSignOutBold } from "react-icons/pi";
+import { GoDatabase } from "react-icons/go";
+import { RiAddBoxLine } from "react-icons/ri";
 import {
-  HiArrowSmRight,
   HiChartPie,
   HiInbox,
   HiMenu,
   HiShoppingBag,
   HiTable,
   HiUser,
-  HiViewBoards,
 } from "react-icons/hi";
 import Obsidian from "../assets/Obsidian.png";
 import { useNavigate } from "react-router-dom";
@@ -22,8 +23,8 @@ export function SidebarComponent() {
   };
 
   const signOut = () => {
-    navigate('/')
-  }
+    navigate("/");
+  };
 
   return (
     <div className="flex h-screen rounded-sm dark">
@@ -35,46 +36,44 @@ export function SidebarComponent() {
       >
         {/* Hamburger Menu */}
         <div className="flex items-center justify-between">
-        {/* Custom Sidebar Logo */}
-        <div
-          className={`flex items-center justify-center ${
-              isExpanded ? "" : ""
-            }`}
-            >
-          <img
-            src={Obsidian}
-            alt="Obsidian Logo"
-            className={`transition-all duration-300 ${
+          {/* Custom Sidebar Logo */}
+          <div className={`flex items-center justify-center`}>
+            <img
+              src={Obsidian}
+              alt="Obsidian Logo"
+              className={`transition-all duration-300 ${
                 isExpanded ? "w-32 h-32" : "hidden"
-            }`}
+              }`}
             />
-            </div>
+          </div>
 
-        <div
-          className={`flex justify-end items-center py-2 ${
-              isExpanded ? "justify-end" : ""
-            }`}
+          <div className="flex justify-end items-center py-2">
+            <button
+              onClick={toggleSidebar}
+              className="text-white rounded-md hover:bg-gray-700 p-2"
             >
-          <button
-            onClick={toggleSidebar}
-            className="text-white rounded-md hover:bg-gray-700 p-2"
-            >
-            <HiMenu size={24} />
-          </button>
+              <HiMenu size={24} />
+            </button>
+          </div>
         </div>
 
-
-        </div>
-
-        {/* My sidebar Items */}
+        {/* Sidebar Items */}
         <Sidebar.Items className="flex">
           <Sidebar.ItemGroup>
             <Sidebar.Item href="#" icon={HiChartPie}>
               {isExpanded && "Dashboard"}
             </Sidebar.Item>
-            <Sidebar.Item href="#" icon={HiViewBoards}>
-              {isExpanded && "Kanban"}
-            </Sidebar.Item>
+
+            {/* Properties Section */}
+            {isExpanded ? (
+              <Sidebar.Collapse label="Properties" icon={GoDatabase}>
+                <Sidebar.Item className="cursor-pointer" icon={RiAddBoxLine}>New Listing</Sidebar.Item>
+              </Sidebar.Collapse>
+            ) : (
+
+              <Sidebar.Item icon={GoDatabase} />
+            )}
+
             <Sidebar.Item href="#" icon={HiInbox}>
               {isExpanded && "Inbox"}
             </Sidebar.Item>
@@ -88,9 +87,9 @@ export function SidebarComponent() {
               {isExpanded && "Sign Up"}
             </Sidebar.Item>
             <div onClick={signOut}>
-            <Sidebar.Item href="#" icon={HiArrowSmRight}>
-              {isExpanded && "Sign Out"}
-            </Sidebar.Item>
+              <Sidebar.Item href="#" icon={PiSignOutBold}>
+                {isExpanded && "Sign Out"}
+              </Sidebar.Item>
             </div>
           </Sidebar.ItemGroup>
         </Sidebar.Items>

@@ -1,0 +1,29 @@
+import axios from 'axios';
+
+export interface iListings {
+  id: string;
+  propertytitle: string;
+  propertydescription: string;
+  propertyprice: number;
+  mainimage: string;
+  additionalimages: string[];
+}
+
+export interface iListingsResponse {
+  success: boolean;
+  message: string;
+  data: iListings[];
+}
+
+const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+export const getListings = async (): Promise<iListings[]> => {
+  try {
+    const response = await axios.get<iListingsResponse>(BASE_URL);
+    console.log("API Response:", response.data);
+    return response.data.data;
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    throw error;
+  }
+};

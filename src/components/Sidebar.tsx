@@ -42,7 +42,7 @@ export function SidebarComponent() {
               src={Obsidian}
               alt="Obsidian Logo"
               className={`transition-all duration-300 ${
-                isExpanded ? "w-32 h-32" : "hidden"
+                isExpanded ? "w-36 h-36" : "hidden"
               }`}
             />
           </div>

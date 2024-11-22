@@ -1,0 +1,15 @@
+.listingsContainer {
+    padding: 0.8em;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.listingsContainer:hover {
+    background-color: #1f2837;
+    transition-duration: 0.3s;
+    color: white;
+}
+
+.propertyImage {
+    border-radius: 5px;
+}

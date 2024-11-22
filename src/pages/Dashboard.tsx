@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { SidebarComponent } from "../components/Sidebar";
-import axios from "axios";
+import '../styles/dashboard.css'
+import { getListings } from "../services/listingsService";
 
 export interface iListings {
   id: string;
@@ -22,20 +23,18 @@ export const Dashboard = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 8;
 
-  const BASE_URL = import.meta.env.VITE_BASE_URL;
-
   useEffect(() => {
-    const getData = async () => {
+    const fetchListings = async () => {
       try {
-        const response = await axios.get<iListingsResponse>(BASE_URL);
-        console.log("API Response:", response.data);
-        setListings(response.data.data);
+        const data = await getListings();
+        setListings(data);
       } catch (error) {
-        console.error("Error fetching properties:", error);
+        // Handle errors appropriately in your UI
+        console.error("Error fetching listings:", error);
       }
     };
-    getData();
-  }, [BASE_URL]);
+    fetchListings();
+  }, []);
 
   // Calculate the total number of pages
   const totalPages = Math.ceil(listings.length / itemsPerPage);
@@ -65,64 +64,74 @@ export const Dashboard = () => {
         {/* Sidebar */}
         <SidebarComponent />
 
-        {/* Main Content */}
-        <div className="flex-1 p-4">
-          <h1 className="text-2xl font-bold mb-4">Active Properties</h1>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {paginatedListings.map((listing) => (
-              <div
-                key={listing.id}
-                className="bg-white shadow-lg rounded-md overflow-hidden"
-              >
-                <img
-                  src={listing.mainimage}
-                  alt={listing.propertytitle}
-                  className="w-full h-48 object-cover"
-                />
-                <div className="p-4">
-                  <h3 className="text-lg font-semibold">
-                    {listing.propertytitle}
-                  </h3>
-                  <p className="text-xl font-bold text-teal-600 mt-4">
-                    ${listing.propertyprice.toLocaleString()}
-                  </p>
-                  {/* <button className="mt-4 bg-teal-500 text-white px-4 py-2 rounded hover:bg-teal-600">
-                    View Details
-                  </button> */}
-                </div>
-              </div>
-            ))}
+        {/* Banner for Active Properties */}
+        <div className="flex flex-col">
+          <div className="flex items-center p-4 w-full h-16 z-10">
+            <h1 className="text-2xl font-bold mb-2 text-slate-700">Active Properties</h1>
           </div>
 
-          {/* Pagination */}
-          <div className="flex justify-center items-center mt-6 space-x-4">
-            <button
-              onClick={handlePreviousPage}
-              disabled={currentPage === 1}
-              className={`px-4 py-2 bg-gray-200 rounded ${
-                currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
-              }`}
-            >
-              Previous
-            </button>
-            <span className="text-gray-600">
-              Page {currentPage} of {totalPages}
-            </span>
-            <button
-              onClick={handleNextPage}
-              disabled={currentPage === totalPages}
-              className={`px-4 py-2 bg-gray-200 rounded ${
-                currentPage === totalPages
-                  ? "cursor-not-allowed opacity-50"
-                  : ""
-              }`}
-            >
-              Next
-            </button>
+          {/* Main Content */}
+          <div className="flex-1 p-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              {paginatedListings.map((listing) => (
+                <div
+                  key={listing.id}
+                  className="bg-white rounded-md overflow-hidden listingsContainer"
+                >
+                  <img
+                    src={listing.mainimage}
+                    alt={listing.propertytitle}
+                    className="w-full h-48 object-cover propertyImage"
+                    />
+                  <div className="p-2">
+                    <h3 className="text-lg font-semibold">
+                      {listing.propertytitle}
+                    </h3>
+
+                    {/* Price + Button container */}
+                    <div className="flex items-center justify-between mt-4">
+                    <p className="text-xl font-bold text-teal-600 mt-2">
+                      ${listing.propertyprice.toLocaleString()}
+                    </p>
+                    <button className="mt-2 bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-600">
+                    Edit Listing
+                    </button>
+                    </div>
+                    </div>
+
+              </div>
+              ))}
+            </div>
+
+            {/* Pagination */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button
+                onClick={handlePreviousPage}
+                disabled={currentPage === 1}
+                className={`px-4 py-2 bg-slate-900 text-white rounded ${
+                  currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
+                }`}
+              >
+                Previous
+              </button>
+              <span className="text-gray-600">
+                Page {currentPage} of {totalPages}
+              </span>
+              <button
+                onClick={handleNextPage}
+                disabled={currentPage === totalPages}
+                className={`px-4 py-2 bg-slate-900 text-white rounded ${
+                  currentPage === totalPages
+                    ? "cursor-not-allowed opacity-50"
+                    : ""
+                }`}
+              >
+                Next
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </>
   );
 };
- 

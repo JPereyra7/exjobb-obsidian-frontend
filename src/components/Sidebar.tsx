@@ -11,7 +11,7 @@ import {
   HiTable,
   HiUser,
 } from "react-icons/hi";
-import Obsidian from "../assets/Obsidian.png";
+import Obsidian from "../assets/ObsidianCropped.png";
 import { useNavigate } from "react-router-dom";
 
 export function SidebarComponent() {
@@ -31,18 +31,18 @@ export function SidebarComponent() {
       <Sidebar
         aria-label="Expandable sidebar"
         className={`transition-all duration-300 min-h-full ${
-          isExpanded ? "w-64" : "w-16"
+          isExpanded ? "w-56" : "w-16"
         }`}
       >
         {/* Hamburger Menu */}
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-3">
           {/* Custom Sidebar Logo */}
-          <div className={`flex items-center justify-center`}>
+          <div className={`flex items-center justify-between`}>
             <img
               src={Obsidian}
               alt="Obsidian Logo"
               className={`transition-all duration-300 ${
-                isExpanded ? "w-36 h-36" : "hidden"
+                isExpanded ? "w-[80%] h-auto" : "hidden"
               }`}
             />
           </div>

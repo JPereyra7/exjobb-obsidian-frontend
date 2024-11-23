@@ -64,6 +64,10 @@ export const Dashboard = () => {
         {/* Sidebar */}
         <SidebarComponent />
 
+        {/* || */}
+        {/* I want to comment on this section since this is the place where the data table will be for my leads */}
+        {/* || */}
+
         {/* Banner for Active Properties */}
         <div className="flex flex-col">
           <div className="flex items-center p-4 w-full h-16 z-10">
@@ -89,11 +93,11 @@ export const Dashboard = () => {
                     </h3>
 
                     {/* Price + Button container */}
-                    <div className="flex items-center justify-between mt-4">
+                    <div className="flex items-start justify-between mt-4 flex-col md:flex-row lg:flex-row">
                     <p className="text-xl font-bold text-teal-600 mt-2">
                       ${listing.propertyprice.toLocaleString()}
                     </p>
-                    <button className="mt-2 bg-teal-500 text-white px-2 py-1 rounded hover:bg-teal-600">
+                    <button className="mt-2 bg-slate-900 text-white px-2 py-1 rounded hover:bg-teal-600">
                     Edit Listing
                     </button>
                     </div>

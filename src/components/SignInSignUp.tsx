@@ -1,10 +1,8 @@
-// SignInSignUp.tsx
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "../supabaseClient";
-// import { useSupabaseUser } from "../context/SupabaseUserContext";
+import '../styles/home.css'
 
 export const SignInSignUp = () => {
   const navigate = useNavigate();
@@ -14,7 +12,6 @@ export const SignInSignUp = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  // const { user } = useSupabaseUser();
 
   const navigateDashboard = () => {
     navigate("/dashboard");
@@ -32,11 +29,9 @@ export const SignInSignUp = () => {
     }
   
     try {
-      // Split full name into first and last names since thats their names in the db
       const [firstname, ...surnameParts] = fullName.trim().split(" ");
       const surname = surnameParts.join(" ");
   
-      // Signup
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -50,7 +45,6 @@ export const SignInSignUp = () => {
   
       console.log("Sign up successful, creating profile for:", data.user.id);
   
-      // Supabase inserting user to db
       const { error: profileError } = await supabase.from("users").insert({
         id: data.user.id,
         email,
@@ -64,14 +58,13 @@ export const SignInSignUp = () => {
       console.log("Profile created successfully for:", data.user.id);
       toast.success("Account created successfully! Please log in.");
   
-      // Reset form
       setEmail("");
       setPassword("");
       setFullName("");
       setIsSignUp(false);
     } catch (error) {
       console.error("Sign up error:", error);
-      setError(error instanceof Error ? error.message : "Failed to sign up");
+      console.log(error instanceof Error ? error.message : "Failed to sign up");
       toast.error(error instanceof Error ? error.message : "Sign-up failed");
     } finally {
       setLoading(false);
@@ -84,7 +77,6 @@ export const SignInSignUp = () => {
     setError(null);
   
     try {
-      // Attempt to sign in
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -101,25 +93,23 @@ export const SignInSignUp = () => {
       }
     } catch (error) {
       console.error("Sign in error:", error);
-      setError(error instanceof Error ? error.message : "Failed to sign in");
+      console.log(error instanceof Error ? error.message : "Failed to sign in");
       toast.error(error instanceof Error ? error.message : "Sign-in failed");
     } finally {
       setLoading(false);
     }
   };
-  
-  
 
   const handleRecoverPassword = () => {
     navigate("/recover-password");
   };
-  //DETTA LÖSER DU SEN!!!!!
+  
   console.log(handleRecoverPassword);
 
   return (
-    <div className="flex flex-col items-center justify-center h-screen">
-      <div className="mb-[15em] lg:mb-80 bg-[#030714] shadow-2xl shadow-teal-100 rounded-lg p-8 max-w-sm w-[85%] z-10">
-        <h2 className="text-center text-2xl font-semibold mb-6">
+    <div className="flex items-center justify-center min-h-[calc(100vh-140px)] mt-10">
+      <div className="bg-[#030714] shadow-2xl shadow-teal-100 rounded-lg p-8 max-w-sm w-[85%] z-10">
+        <h2 className="text-center text-xl font-semibold mb-6 font text-gray-300">
           {isSignUp ? "Create an account" : "Sign In"}
         </h2>
 

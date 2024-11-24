@@ -17,7 +17,7 @@ export interface iListings {
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
   useEffect(() => {
     const fetchListings = async () => {

@@ -1,0 +1,10 @@
+@import url(https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700&display=swap);
+
+.fontTitle {
+    font-family: "League Spartan", sans-serif;
+    font-size: 1em;
+}
+
+.fontValue {
+    font-family: "League Spartan", sans-serif;
+}

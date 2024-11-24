@@ -2,6 +2,7 @@ import { Sidebar } from "flowbite-react";
 import { PiSignOutBold } from "react-icons/pi";
 import { GoDatabase } from "react-icons/go";
 import { RiAddBoxLine } from "react-icons/ri";
+import '../styles/sidebar.css'
 import {
   HiChartPie,
   HiInbox,
@@ -16,15 +17,15 @@ interface SidebarProps {
   isExpanded: boolean;
 }
 
-// Custom theme for Flowbite Sidebar
+// Custom theme for Flowbiteäs sidebar
 const customTheme: CustomFlowbiteTheme['sidebar'] = {
   root: {
-    base: "h-full",
+    base: "h-full font",
     collapsed: {
       on: "w-16",
       off: "w-64"
     },
-    inner: "h-full overflow-y-auto overflow-x-hidden bg-[#0f172a] py-4 px-3"
+    inner: "h-full overflow-y-auto overflow-x-hidden bg-gradient-to-tr from-[#010102] to-[#1e293b] py-4 px-3"
   },
   collapse: {
     button: "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-200 transition duration-75 hover:bg-gray-700",
@@ -98,6 +99,11 @@ export function SidebarComponent({ isExpanded }: SidebarProps) {
                   icon={RiAddBoxLine}
                 >
                   New Listing
+                </Sidebar.Item>
+                <Sidebar.Item
+                  className="cursor-pointer"
+                >
+                  Inactive Listings
                 </Sidebar.Item>
               </Sidebar.Collapse>
             ) : (

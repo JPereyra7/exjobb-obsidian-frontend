@@ -1,16 +1,31 @@
+@import url(https://fonts.googleapis.com/css2?family=League+Spartan:wght@300;400;500;600;700&display=swap);
+
 .listingsContainer {
-    padding: 0.8em;
-    border-radius: 5px;
-    cursor: pointer;
-    border: 1px solid #edededab
+  padding: 0.8em;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 1px solid #edededab;
 }
 
 .listingsContainer:hover {
-    background-color: #ededed4b;
-    transition-duration: 0.3s;
-    color: rgba(0, 0, 0, 0.683);
+  background-color: #ededed4b;
+  transition-duration: 0.3s;
+  color: rgba(0, 0, 0, 0.683);
 }
 
 .propertyImage {
-    border-radius: 5px;
+  border-radius: 5px;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.activeFont {
+    font-family: "League Spartan", sans-serif;
 }

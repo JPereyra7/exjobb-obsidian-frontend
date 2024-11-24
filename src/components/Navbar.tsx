@@ -10,8 +10,8 @@ interface NavbarProps {
 export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
     return(
         <>
-              {/* Top Navbar */}
-      <div className="bg-[#0f172a] border-b border-gray-700 px-4 py-2 flex items-center justify-between">
+        {/* Top Navbar */}
+      <div className="bg-gradient-to-tr from-[#010102] to-[#1e293b] border-b border-gray-700 px-4 py-2 flex items-center justify-between">
         <div className="flex items-center">
           <button
             onClick={() => setIsSidebarOpen(!isSidebarOpen)}

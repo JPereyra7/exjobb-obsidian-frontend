@@ -3,6 +3,8 @@ import { SidebarComponent } from "../components/Sidebar";
 import "../styles/dashboard.css";
 import { getListings } from "../services/listingsService";
 import Navbar from "../components/Navbar";
+import { DashboardStats } from "../components/DashboardStats";
+import { DollarSign, Power, House, PowerOff } from "lucide-react";
 
 export interface iListings {
   id: string;
@@ -32,20 +34,28 @@ export const Dashboard = () => {
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) { // lg breakpoint
+      if (window.innerWidth >= 1024) {
         setIsSidebarOpen(true);
       }
     };
 
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
+
+  //Statistical Calculations for DashboardStats
+  const totalValue = listings.reduce(
+    (sum, listing) => sum + listing.propertyprice,
+    0
+  );
+  const totalProperties = listings.length;
+  const activeProperties = totalProperties;
+  const inactiveProperties = 0; //Kommer ändras sen!
 
   return (
     <div className="min-h-screen bg-[#222e40]">
-
-<Navbar 
-        isSidebarOpen={isSidebarOpen} 
+      <Navbar
+        isSidebarOpen={isSidebarOpen}
         setIsSidebarOpen={setIsSidebarOpen}
       />
 
@@ -53,7 +63,7 @@ export const Dashboard = () => {
         {/* Sidebar with overlay */}
         <div
           className={`fixed lg:relative z-30 h-[calc(100vh-3.5rem)] transition-transform duration-300 ease-in-out ${
-            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
           }`}
         >
           <SidebarComponent isExpanded={isSidebarOpen} />
@@ -69,11 +79,36 @@ export const Dashboard = () => {
 
         {/* Main Content */}
         <div className="flex-1 p-4 overflow-x-auto">
-          <div className="overflow-scroll h-[calc(100vh-7rem)] rounded-[5px] border border-gray-700">
-            <h1 className="text-lg font-semibold text-white bg-[#0f172a] px-6 py-6 border-b border-gray-800">
+
+          {/* Stats Section */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+            <DashboardStats
+              title="Total Value"
+              value={`$ ${totalValue.toLocaleString()}`}
+              icon={<DollarSign size={24} className="text-emerald-500" />}
+            />
+            <DashboardStats
+              title="Total Properties"
+              value={totalProperties}
+              icon={<House size={24} className="text-blue-500" />}
+            />
+            <DashboardStats
+              title="Active Properties"
+              value={activeProperties}
+              icon={<Power size={24} className="text-lime-300" />}
+            />
+            <DashboardStats
+              title="Inactive Properties"
+              value={inactiveProperties}
+              icon={<PowerOff size={24} className="text-red-400" />}
+            />
+          </div>
+
+          <div className="overflow-y-scroll h-[calc(100vh-20rem)] rounded-[5px] border border-gray-700 no-scrollbar">
+            <h1 className="text-lg font-semibold text-white bg-gradient-to-tr from-[#010102] to-[#1e293b] px-6 py-6 border-b border-gray-800 activeFont">
               Active Properties
             </h1>
-            <table className="min-w-full bg-[#0f172a]">
+            <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b]">
               <thead className="border-b-2 border-gray-800">
                 <tr>
                   <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28"></th>
@@ -83,9 +118,11 @@ export const Dashboard = () => {
                   <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden md:table-cell">
                     Price
                   </th>
+                  <div className="flex flex-row items-center justify-end mr-20">
                   <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden lg:table-cell">
                     Actions
                   </th>
+                  </div>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-800">
@@ -110,14 +147,17 @@ export const Dashboard = () => {
                         ${listing.propertyprice.toLocaleString()}
                       </span>
                     </td>
+                    <div className="flex flex-row items-center justify-end">
+
                     <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
-                      <button className="bg-slate-900 text-white px-3 py-1 rounded mr-2 hover:bg-teal-600">
+                      <button className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800">
                         Edit
                       </button>
-                      <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                      <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
                         Delist
                       </button>
                     </td>
+                    </div>
                   </tr>
                 ))}
               </tbody>

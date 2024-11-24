@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
 import { SidebarComponent } from "../components/Sidebar";
-import '../styles/dashboard.css'
+import "../styles/dashboard.css";
 import { getListings } from "../services/listingsService";
+import Navbar from "../components/Navbar";
 
 export interface iListings {
   id: string;
@@ -12,16 +13,9 @@ export interface iListings {
   additionalimages: string[];
 }
 
-export interface iListingsResponse {
-  success: boolean;
-  message: string;
-  data: iListings[]; //Array in supabase (postgres)
-}
-
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
-  const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 8;
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -29,113 +23,108 @@ export const Dashboard = () => {
         const data = await getListings();
         setListings(data);
       } catch (error) {
-        // Handle errors appropriately in your UI
         console.error("Error fetching listings:", error);
       }
     };
     fetchListings();
   }, []);
 
-  // Calculate the total number of pages
-  const totalPages = Math.ceil(listings.length / itemsPerPage);
+  // Handle window resize
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1024) { // lg breakpoint
+        setIsSidebarOpen(true);
+      }
+    };
 
-  // Slice the listings to display only the current page's items
-  const paginatedListings = listings.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage
-  );
-
-  // Handle page nav
-  const handleNextPage = () => {
-    if (currentPage < totalPages) {
-      setCurrentPage((prevPage) => prevPage + 1);
-    }
-  };
-
-  const handlePreviousPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage((prevPage) => prevPage - 1);
-    }
-  };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   return (
-    <>
-      <div className="flex min-h-screen">
-        {/* Sidebar */}
-        <SidebarComponent />
+    <div className="min-h-screen bg-[#222e40]">
 
-        {/* || */}
-        {/* I want to comment on this section since this is the place where the data table will be for my leads */}
-        {/* || */}
+<Navbar 
+        isSidebarOpen={isSidebarOpen} 
+        setIsSidebarOpen={setIsSidebarOpen}
+      />
 
-        {/* Banner for Active Properties */}
-        <div className="flex flex-col">
-          <div className="flex items-center p-4 w-full h-16 z-10">
-            <h1 className="text-2xl font-bold mb-2 text-slate-700">Active Properties</h1>
-          </div>
+      <div className="flex relative">
+        {/* Sidebar with overlay */}
+        <div
+          className={`fixed lg:relative z-30 h-[calc(100vh-3.5rem)] transition-transform duration-300 ease-in-out ${
+            isSidebarOpen ? 'translate-x-0' : '-translate-x-full'
+          }`}
+        >
+          <SidebarComponent isExpanded={isSidebarOpen} />
+        </div>
 
-          {/* Main Content */}
-          <div className="flex-1 p-4">
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {paginatedListings.map((listing) => (
-                <div
-                  key={listing.id}
-                  className="bg-white rounded-md overflow-hidden listingsContainer"
-                >
-                  <img
-                    src={listing.mainimage}
-                    alt={listing.propertytitle}
-                    className="w-full h-48 object-cover propertyImage"
-                    />
-                  <div className="p-2">
-                    <h3 className="text-lg font-semibold">
-                      {listing.propertytitle}
-                    </h3>
+        {/* Overlay for mobile only */}
+        {isSidebarOpen && (
+          <div
+            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+            onClick={() => setIsSidebarOpen(false)}
+          />
+        )}
 
-                    {/* Price + Button container */}
-                    <div className="flex items-start justify-between mt-4 flex-col md:flex-row lg:flex-row">
-                    <p className="text-xl font-bold text-teal-600 mt-2">
-                      ${listing.propertyprice.toLocaleString()}
-                    </p>
-                    <button className="mt-2 bg-slate-900 text-white px-2 py-1 rounded hover:bg-teal-600">
-                    Edit Listing
-                    </button>
-                    </div>
-                    </div>
-
-              </div>
-              ))}
-            </div>
-
-            {/* Pagination */}
-            <div className="flex justify-center items-center mt-6 space-x-4">
-              <button
-                onClick={handlePreviousPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 bg-slate-900 text-white rounded ${
-                  currentPage === 1 ? "cursor-not-allowed opacity-50" : ""
-                }`}
-              >
-                Previous
-              </button>
-              <span className="text-gray-600">
-                Page {currentPage} of {totalPages}
-              </span>
-              <button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-                className={`px-4 py-2 bg-slate-900 text-white rounded ${
-                  currentPage === totalPages
-                    ? "cursor-not-allowed opacity-50"
-                    : ""
-                }`}
-              >
-                Next
-              </button>
-            </div>
+        {/* Main Content */}
+        <div className="flex-1 p-4 overflow-x-auto">
+          <div className="overflow-scroll h-[calc(100vh-7rem)] rounded-[5px] border border-gray-700">
+            <h1 className="text-lg font-semibold text-white bg-[#0f172a] px-6 py-6 border-b border-gray-800">
+              Active Properties
+            </h1>
+            <table className="min-w-full bg-[#0f172a]">
+              <thead className="border-b-2 border-gray-800">
+                <tr>
+                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28"></th>
+                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden lg:table-cell">
+                    Listing Name
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden md:table-cell">
+                    Price
+                  </th>
+                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden lg:table-cell">
+                    Actions
+                  </th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-800">
+                {listings.map((listing) => (
+                  <tr key={listing.id}>
+                    <td className="px-6 py-2 whitespace-nowrap w-20">
+                      <img
+                        src={listing.mainimage}
+                        alt={listing.propertytitle}
+                        className="w-16 h-16 object-cover rounded"
+                      />
+                    </td>
+                    <td className="px-6 py-4 whitespace-normal">
+                      <div className="text-s text-gray-100 font-bold">
+                        <span className="md:text-m text-gray-100 font-bold">
+                          {listing.propertytitle}
+                        </span>
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
+                      <span className="text-m text-gray-100 font-semibold">
+                        ${listing.propertyprice.toLocaleString()}
+                      </span>
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
+                      <button className="bg-slate-900 text-white px-3 py-1 rounded mr-2 hover:bg-teal-600">
+                        Edit
+                      </button>
+                      <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-red-600">
+                        Delist
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-    </>
+    </div>
   );
 };

@@ -28,9 +28,9 @@ const customTheme: CustomFlowbiteTheme['sidebar'] = {
     inner: "h-full overflow-y-auto overflow-x-hidden bg-gradient-to-tr from-[#010102] to-[#1e293b] py-4 px-3"
   },
   collapse: {
-    button: "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-200 transition duration-75 hover:bg-gray-700",
+    button: "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-200 transition duration-75 hover:bg-gray-700 hover:text-white",
     icon: {
-      base: "h-6 w-6 text-gray-300 transition duration-75 group-hover:text-gray-200",
+      base: "h-6 w-6 text-gray-300 transition duration-75 group-hover:text-white",
       open: {
         off: "",
         on: "text-gray-200"
@@ -39,7 +39,7 @@ const customTheme: CustomFlowbiteTheme['sidebar'] = {
     label: {
       base: "ml-3 flex-1 whitespace-nowrap text-left",
       icon: {
-        base: "h-6 w-6 transition ease-in-out delay-0",
+        base: "h-6 w-6 transition ease-in-out delay-0 hover:text-white",
         open: {
           on: "rotate-180",
           off: ""
@@ -48,7 +48,7 @@ const customTheme: CustomFlowbiteTheme['sidebar'] = {
     }
   },
   item: {
-    base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-200 hover:bg-gray-700",
+    base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-200 hover:bg-gray-700 hover:text-white",
     active: "bg-gray-700 text-gray-200",
     collapsed: {
       insideCollapse: "group w-full pl-8 transition duration-75",
@@ -58,7 +58,7 @@ const customTheme: CustomFlowbiteTheme['sidebar'] = {
       base: "px-3 flex-1 whitespace-nowrap"
     },
     icon: {
-      base: "h-6 w-6 flex-shrink-0 text-gray-300 transition duration-75 group-hover:text-gray-200",
+      base: "h-6 w-6 flex-shrink-0 text-gray-300 transition duration-75 group-hover:text-white",
       active: "text-gray-200"
     }
   },

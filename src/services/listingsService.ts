@@ -5,6 +5,7 @@ export interface iListings {
   propertytitle: string;
   propertydescription: string;
   propertyprice: number;
+  activelisting: boolean;
   mainimage: string;
   additionalimages: string[];
 }

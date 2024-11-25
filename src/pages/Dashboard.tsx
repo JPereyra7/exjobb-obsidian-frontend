@@ -11,32 +11,45 @@ export interface iListings {
   propertytitle: string;
   propertydescription: string;
   propertyprice: number;
+  activelisting: boolean;
   mainimage: string;
   additionalimages: string[];
 }
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
-  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(window.innerWidth >= 1024);
+  const [activeProperties, setActiveProperties] = useState(0);
+  const [inactiveProperties, setInactiveProperties] = useState(0);
 
+  const calculateStats = (data: iListings[]) => {
+    const active = data.filter((listing) => listing.activelisting === true).length;
+    const inactive = data.filter((listing) => listing.activelisting === false).length;
+  
+    setActiveProperties(active);
+    setInactiveProperties(inactive);
+  };
+  
+  //Fetch listings
   useEffect(() => {
     const fetchListings = async () => {
       try {
         const data = await getListings();
         setListings(data);
+        calculateStats(data);
       } catch (error) {
         console.error("Error fetching listings:", error);
       }
     };
+  
     fetchListings();
   }, []);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      if (window.innerWidth >= 1024) {
-        setIsSidebarOpen(true);
-      }
+      const isDesktop = (window.innerWidth >= 1024);
+        setIsSidebarOpen(isDesktop);
     };
 
     window.addEventListener("resize", handleResize);
@@ -48,9 +61,7 @@ export const Dashboard = () => {
     (sum, listing) => sum + listing.propertyprice,
     0
   );
-  const totalProperties = listings.length;
-  const activeProperties = totalProperties;
-  const inactiveProperties = 0; //Kommer ändras sen!
+
 
   return (
     <div className="min-h-screen bg-[#222e40]">
@@ -89,7 +100,7 @@ export const Dashboard = () => {
             />
             <DashboardStats
               title="Total Properties"
-              value={totalProperties}
+              value={listings.length}
               icon={<House size={24} className="text-blue-500" />}
             />
             <DashboardStats
@@ -111,15 +122,15 @@ export const Dashboard = () => {
             <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b]">
               <thead className="border-b-2 border-gray-800">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-28"></th>
-                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden lg:table-cell">
+                  <th className="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-28"></th>
+                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden lg:table-cell activeFont">
                     Listing Name
                   </th>
-                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden md:table-cell">
+                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden md:table-cell activeFont">
                     Price
                   </th>
                   <div className="flex flex-row items-center justify-end mr-20">
-                  <th className="px-6 py-3 text-left text-xs text-white font-semibold tracking-wider hidden lg:table-cell">
+                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden lg:table-cell activeFont">
                     Actions
                   </th>
                   </div>
@@ -137,13 +148,13 @@ export const Dashboard = () => {
                     </td>
                     <td className="px-6 py-4 whitespace-normal">
                       <div className="text-s text-gray-100 font-bold">
-                        <span className="md:text-m text-gray-100 font-bold">
+                        <span className="md:text-m text-gray-100 font-semibold activeFont">
                           {listing.propertytitle}
                         </span>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                      <span className="text-m text-gray-100 font-semibold">
+                      <span className="text-m text-gray-100 font-semibold activeFont">
                         ${listing.propertyprice.toLocaleString()}
                       </span>
                     </td>

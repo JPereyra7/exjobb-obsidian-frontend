@@ -23,14 +23,18 @@ export const Dashboard = () => {
   const [inactiveProperties, setInactiveProperties] = useState(0);
 
   const calculateStats = (data: iListings[]) => {
-    const active = data.filter((listing) => listing.activelisting === true).length;
-    const inactive = data.filter((listing) => listing.activelisting === false).length;
-  
+    const active = data.filter(
+      (listing) => listing.activelisting === true
+    ).length;
+    const inactive = data.filter(
+      (listing) => listing.activelisting === false
+    ).length;
+
     setActiveProperties(active);
     setInactiveProperties(inactive);
   };
-  
-  //Fetch listings
+
+  // Fetch listings
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -41,27 +45,26 @@ export const Dashboard = () => {
         console.error("Error fetching listings:", error);
       }
     };
-  
+
     fetchListings();
   }, []);
 
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      const isDesktop = (window.innerWidth >= 1024);
-        setIsSidebarOpen(isDesktop);
+      const isDesktop = window.innerWidth >= 1024;
+      setIsSidebarOpen(isDesktop);
     };
 
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  //Statistical Calculations for DashboardStats
+  // Statistical Calculations for DashboardStats
   const totalValue = listings.reduce(
     (sum, listing) => sum + listing.propertyprice,
     0
   );
-
 
   return (
     <div className="min-h-screen bg-[#222e40]">
@@ -90,7 +93,6 @@ export const Dashboard = () => {
 
         {/* Main Content */}
         <div className="flex-1 p-4 overflow-x-auto">
-
           {/* Stats Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
             <DashboardStats
@@ -115,64 +117,68 @@ export const Dashboard = () => {
             />
           </div>
 
-          <div className="overflow-y-scroll h-[calc(100vh-20rem)] rounded-[5px] border border-gray-700 no-scrollbar">
+          {/* Active Properties Header + Table */}
+          <div className="rounded-[5px] border border-gray-700">
             <h1 className="text-lg font-semibold text-white bg-gradient-to-tr from-[#010102] to-[#1e293b] px-6 py-6 border-b border-gray-800 activeFont">
               Active Properties
             </h1>
-            <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b]">
-              <thead className="border-b-2 border-gray-800">
-                <tr>
-                  <th className="px-6 py-3 text-left text-s font-medium text-gray-500 uppercase tracking-wider w-28"></th>
-                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden lg:table-cell activeFont">
-                    Listing Name
-                  </th>
-                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden md:table-cell activeFont">
-                    Price
-                  </th>
-                  <div className="flex flex-row items-center justify-end mr-20">
-                  <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider hidden lg:table-cell activeFont">
-                    Actions
-                  </th>
-                  </div>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-800">
-                {listings.map((listing) => (
-                  <tr key={listing.id}>
-                    <td className="px-6 py-2 whitespace-nowrap w-20">
-                      <img
-                        src={listing.mainimage}
-                        alt={listing.propertytitle}
-                        className="w-16 h-16 object-cover rounded"
-                      />
-                    </td>
-                    <td className="px-6 py-4 whitespace-normal">
-                      <div className="text-s text-gray-100 font-bold">
-                        <span className="md:text-m text-gray-100 font-semibold activeFont">
-                          {listing.propertytitle}
-                        </span>
-                      </div>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap hidden md:table-cell">
-                      <span className="text-m text-gray-100 font-semibold activeFont">
-                        ${listing.propertyprice.toLocaleString()}
-                      </span>
-                    </td>
-                    <div className="flex flex-row items-center justify-end">
-
-                    <td className="px-6 py-4 whitespace-nowrap hidden lg:table-cell">
-                      <button className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800">
-                        Edit
-                      </button>
-                      <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
-                        Delist
-                      </button>
-                    </td>
+            <div className="overflow-x-auto overflow-y-scroll h-[calc(100vh-20rem)] no-scrollbar">
+              <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b] table-fixed">
+                <thead className="border-b-2 border-gray-800">
+                  <tr>
+                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
+                      Image
+                    </th>
+                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
+                      Listing Name
+                    </th>
+                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-32 md:table-cell">
+                      Price
+                    </th>
+                    <div className="flex flex-row justify-end">
+                      <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
+                        Actions
+                      </th>
                     </div>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="divide-y divide-gray-800">
+                  {listings.map((listing) => (
+                    <tr key={listing.id}>
+                      <td className="px-4 py-2 whitespace-nowrap w-20">
+                        <img
+                          src={listing.mainimage}
+                          alt={listing.propertytitle}
+                          className="w-16 h-16 object-cover rounded"
+                        />
+                      </td>
+                      <td className="px-6 py-4 whitespace-normal w-64">
+                        <div className="text-s text-gray-100 font-bold">
+                          <span className="md:text-m text-gray-100 font-semibold activeFont">
+                            {listing.propertytitle}
+                          </span>
+                        </div>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap w-32 md:table-cell">
+                        <span className="text-m text-gray-100 font-semibold activeFont">
+                          ${listing.propertyprice.toLocaleString()}
+                        </span>
+                      </td>
+                      <td className="px-6 py-4 whitespace-nowrap w-40">
+                        <div className="flex flex-row items-center justify-end">
+                          <button className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800">
+                            Edit
+                          </button>
+                          <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
+                            Delist
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </div>

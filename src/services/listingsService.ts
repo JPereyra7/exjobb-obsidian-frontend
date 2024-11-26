@@ -18,6 +18,7 @@ export interface iListingsResponse {
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 
+//API call to handle GET
 export const getListings = async (): Promise<iListings[]> => {
   try {
     const response = await axios.get<iListingsResponse>(BASE_URL);

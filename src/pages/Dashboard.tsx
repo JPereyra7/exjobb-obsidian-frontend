@@ -5,6 +5,7 @@ import { getListings } from "../services/listingsService";
 import Navbar from "../components/Navbar";
 import { DashboardStats } from "../components/DashboardStats";
 import { DollarSign, Power, House, PowerOff } from "lucide-react";
+import { supabase } from "../supabaseClient";
 
 export interface iListings {
   id: string;
@@ -48,6 +49,35 @@ export const Dashboard = () => {
 
     fetchListings();
   }, []);
+
+  //Delist function (Supabase handler) + Recalculate stats and remove table row
+const delistFunction = async (propertyId: string) => {
+  try {
+    const { data, error } = await supabase
+      .from('properties')
+      .update({ activelisting: false })
+      .eq('id', propertyId);
+
+    if (error) throw error;
+
+    console.log('Property delisted', data);
+
+    // Update the listing state
+    setListings((prevListings) => {
+      const updatedListings = prevListings.map((listing) => {
+        if (listing.id === propertyId) {
+          return { ...listing, activelisting: false };
+        }
+        return listing;
+      });
+      // Update the stats
+      calculateStats(updatedListings);
+      return updatedListings;
+    });
+  } catch (error) {
+    console.error('Error delisting property', error);
+  }
+};
 
   // Handle window resize
   useEffect(() => {
@@ -143,7 +173,9 @@ export const Dashboard = () => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-800">
-                  {listings.map((listing) => (
+                  {listings
+                  .filter((listing) => listing.activelisting)
+                  .map((listing) => (
                     <tr key={listing.id}>
                       <td className="px-4 py-2 whitespace-nowrap w-20">
                         <img
@@ -169,7 +201,7 @@ export const Dashboard = () => {
                           <button className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800">
                             Edit
                           </button>
-                          <button className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
+                          <button onClick={() => delistFunction(listing.id)} className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600">
                             Delist
                           </button>
                         </div>

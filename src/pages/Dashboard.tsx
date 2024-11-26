@@ -346,7 +346,7 @@ export const Dashboard = () => {
                                         </DialogHeader>
                                         {/* Image Slideshow Section */}
                                         {editingListing && (
-                                          <div className="relative w-full h-[300px] bg-black/20 mb-4">
+                                          <div className="relative w-full h-[300px] bg-black/20 mb-4 z-20">
                                             <img
                                               src={
                                                 [
@@ -363,19 +363,19 @@ export const Dashboard = () => {
                                             {/* Navigation Arrows */}
                                             <button
                                               onClick={handlePrevImage}
-                                              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                                              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-30"
                                             >
                                               <ChevronLeft size={24} />
                                             </button>
                                             <button
                                               onClick={handleNextImage}
-                                              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                                              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-30"
                                             >
                                               <ChevronRight size={24} />
                                             </button>
 
                                             {/* Image Counter */}
-                                            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm">
+                                            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm z-30">
                                               {currentImageIndex + 1} /{" "}
                                               {
                                                 [
@@ -395,7 +395,7 @@ export const Dashboard = () => {
                                               </label>
                                               <input
                                                 type="text"
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
                                                 value={
                                                   editingListing.propertytitle
                                                 }
@@ -412,7 +412,7 @@ export const Dashboard = () => {
                                                 Property Description
                                               </label>
                                               <textarea
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
                                                 value={
                                                   editingListing.propertydescription
                                                 }
@@ -430,7 +430,7 @@ export const Dashboard = () => {
                                               </label>
                                               <input
                                                 type="number"
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
                                                 value={
                                                   editingListing.propertyprice
                                                 }

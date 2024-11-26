@@ -337,8 +337,8 @@ export const Dashboard = () => {
                                   </DialogTrigger>
                                   <DialogPortal>
                                     <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-                                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-auto md:h-auto max-h-[85vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700">
-                                      <div className="overflow-y-auto max-h-[85vh] p-6">
+                                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
+                                      <div className="h-full overflow-y-auto">
                                         <DialogHeader>
                                           <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
                                             Edit Property

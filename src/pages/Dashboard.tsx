@@ -1,5 +1,3 @@
-// Dashboard.tsx
-
 import { useEffect, useState } from "react";
 import { SidebarComponent } from "../components/Sidebar";
 import "../styles/dashboard.css";
@@ -7,7 +5,9 @@ import { getListings } from "../services/listingsService";
 import Navbar from "../components/Navbar";
 import { DashboardStats } from "../components/DashboardStats";
 import { DollarSign, Power, House, PowerOff } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "../supabaseClient";
+import vindictiveLogo from "../assets/vindictive-white-vector.png";
 import {
   Dialog,
   DialogTrigger,
@@ -36,6 +36,26 @@ export const Dashboard = () => {
   const [inactiveProperties, setInactiveProperties] = useState(0);
   const [editingListing, setEditingListing] = useState<iListings | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
+  const handlePrevImage = () => {
+    if (!editingListing) return;
+    const totalImages = [
+      editingListing.mainimage,
+      ...editingListing.additionalimages,
+    ].length;
+    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
+  };
+
+  const handleNextImage = () => {
+    if (!editingListing) return;
+    const totalImages = [
+      editingListing.mainimage,
+      ...editingListing.additionalimages,
+    ].length;
+    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
+  };
 
   const calculateStats = (data: iListings[]) => {
     const active = data.filter(
@@ -62,6 +82,14 @@ export const Dashboard = () => {
     };
 
     fetchListings();
+  }, []);
+
+  //Spinner timeout
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsLoading(false);
+    }, 3000);
+    return () => clearTimeout(timer);
   }, []);
 
   // Function to handle Edit button click
@@ -177,223 +205,284 @@ export const Dashboard = () => {
 
   return (
     <div className="min-h-screen bg-[#222e40]">
-      <Navbar
-        isSidebarOpen={isSidebarOpen}
-        setIsSidebarOpen={setIsSidebarOpen}
-      />
-
-      <div className="flex relative">
-        {/* Sidebar with overlay */}
-        <div
-          className={`fixed lg:relative z-30 h-[calc(100vh-3.5rem)] transition-transform duration-300 ease-in-out ${
-            isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-          }`}
-        >
-          <SidebarComponent isExpanded={isSidebarOpen} />
-        </div>
-
-        {/* Overlay for mobile only */}
-        {isSidebarOpen && (
-          <div
-            className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-            onClick={() => setIsSidebarOpen(false)}
-          />
-        )}
-
-        {/* Main Content */}
-        <div className="flex-1 p-4 overflow-x-auto">
-          {/* Stats Section */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-            <DashboardStats
-              title="Total Value"
-              value={`$ ${totalValue.toLocaleString()}`}
-              icon={<DollarSign size={24} className="text-emerald-500" />}
-            />
-            <DashboardStats
-              title="Total Properties"
-              value={listings.length}
-              icon={<House size={24} className="text-blue-500" />}
-            />
-            <DashboardStats
-              title="Active Properties"
-              value={activeProperties}
-              icon={<Power size={24} className="text-lime-300" />}
-            />
-            <DashboardStats
-              title="Inactive Properties"
-              value={inactiveProperties}
-              icon={<PowerOff size={24} className="text-red-400" />}
-            />
+      {isLoading ? (
+        <div className="spinner-container">
+          <div className="spinner-content">
+            <img src={vindictiveLogo} className="obsidian-spinner" alt="" />
+            <div className="loading-bar-container">
+              <div className="loading-bar"></div>
+            </div>
+            <p className="loading-text">Initializing...</p>
           </div>
+        </div>
+      ) : (
+        <>
+          <Navbar
+            isSidebarOpen={isSidebarOpen}
+            setIsSidebarOpen={setIsSidebarOpen}
+          />
 
-          {/* Active Properties Header + Table */}
-          <div className="rounded-[5px] border border-gray-700">
-            <h1 className="text-lg font-semibold text-white bg-gradient-to-tr from-[#010102] to-[#1e293b] px-6 py-6 border-b border-gray-800 activeFont">
-              Active Properties
-            </h1>
-            <div className="overflow-x-auto overflow-y-scroll h-[calc(100vh-20rem)] no-scrollbar">
-              <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b] table-fixed">
-                <thead className="border-b-2 border-gray-800">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
-                      Image
-                    </th>
-                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
-                      Listing Name
-                    </th>
-                    <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-32 md:table-cell">
-                      Price
-                    </th>
-                    <div className="flex flex-row justify-end">
-                      <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
-                        Actions
-                      </th>
-                    </div>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-800">
-                  {listings
-                    .filter((listing) => listing.activelisting)
-                    .map((listing) => (
-                      <tr key={listing.id}>
-                        <td className="px-4 py-2 whitespace-nowrap w-20">
-                          <img
-                            src={listing.mainimage}
-                            alt={listing.propertytitle}
-                            className="w-16 h-16 object-cover rounded"
-                          />
-                        </td>
-                        <td className="px-6 py-4 whitespace-normal w-64">
-                          <div className="text-s text-gray-100 font-bold">
-                            <span className="text-sm md:text-base text-gray-100 font-semibold activeFont">
-                              {listing.propertytitle}
-                            </span>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap w-32 md:table-cell">
-                          <span className="text-m text-gray-100 font-semibold activeFont">
-                            ${listing.propertyprice.toLocaleString()}
-                          </span>
-                        </td>
-                        <td className="px-6 py-4 whitespace-nowrap w-40">
-                          <div className="flex flex-row items-center justify-end">
-                            {/* Dialog Component for Edit */}
+          <div className="flex relative">
+            {/* Sidebar with overlay */}
+            <div
+              className={`fixed lg:relative z-30 h-[calc(100vh-3.5rem)] transition-transform duration-300 ease-in-out ${
+                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
+            >
+              <SidebarComponent isExpanded={isSidebarOpen} />
+            </div>
 
-                            <Dialog
-                              open={isDialogOpen}
-                              onOpenChange={(open) => {
-                                setIsDialogOpen(open);
-                                if (!open) setEditingListing(null);
-                              }}
-                            >
-                              <DialogTrigger asChild>
-                                <button
-                                  onClick={() => handleEditButtonClick(listing)}
-                                  className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800"
+            {/* Overlay for mobile only */}
+            {isSidebarOpen && (
+              <div
+                className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
+                onClick={() => setIsSidebarOpen(false)}
+              />
+            )}
+
+            {/* Main Content */}
+            <div className="flex-1 p-4 overflow-x-auto">
+              {/* Stats Section */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                <DashboardStats
+                  title="Total Value"
+                  value={`$ ${totalValue.toLocaleString()}`}
+                  icon={<DollarSign size={24} className="text-emerald-500" />}
+                />
+                <DashboardStats
+                  title="Total Properties"
+                  value={listings.length}
+                  icon={<House size={24} className="text-blue-500" />}
+                />
+                <DashboardStats
+                  title="Active Properties"
+                  value={activeProperties}
+                  icon={<Power size={24} className="text-lime-300" />}
+                />
+                <DashboardStats
+                  title="Inactive Properties"
+                  value={inactiveProperties}
+                  icon={<PowerOff size={24} className="text-red-400" />}
+                />
+              </div>
+
+              {/* Active Properties Header + Table */}
+              <div className="rounded-[5px] border border-gray-700">
+                <h1 className="text-lg font-semibold text-white bg-gradient-to-tr from-[#010102] to-[#1e293b] px-6 py-6 border-b border-gray-800 activeFont">
+                  Active Properties
+                </h1>
+                <div className="overflow-x-auto overflow-y-scroll h-[calc(100vh-20rem)] no-scrollbar">
+                  <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b] table-fixed">
+                    <thead className="border-b-2 border-gray-800">
+                      <tr>
+                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
+                          Image
+                        </th>
+                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
+                          Listing Name
+                        </th>
+                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-32 md:table-cell">
+                          Price
+                        </th>
+                        <div className="flex flex-row justify-end">
+                          <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
+                            Actions
+                          </th>
+                        </div>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-800">
+                      {listings
+                        .filter((listing) => listing.activelisting)
+                        .map((listing) => (
+                          <tr key={listing.id}>
+                            <td className="px-4 py-2 whitespace-nowrap w-20">
+                              <img
+                                src={listing.mainimage}
+                                alt={listing.propertytitle}
+                                className="w-16 h-16 object-cover rounded"
+                              />
+                            </td>
+                            <td className="px-6 py-4 whitespace-normal w-64">
+                              <div className="text-s text-gray-100 font-bold">
+                                <span className="text-sm md:text-base text-gray-100 font-semibold activeFont">
+                                  {listing.propertytitle}
+                                </span>
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap w-32 md:table-cell">
+                              <span className="text-m text-gray-100 font-semibold activeFont">
+                                ${listing.propertyprice.toLocaleString()}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap w-40">
+                              <div className="flex flex-row items-center justify-end">
+                                {/* Dialog Component for Edit */}
+                                <Dialog
+                                  open={isDialogOpen}
+                                  onOpenChange={(open) => {
+                                    setIsDialogOpen(open);
+                                    if (!open) setEditingListing(null);
+                                  }}
                                 >
-                                  Edit
-                                </button>
-                              </DialogTrigger>
-                              <DialogPortal>
-                                <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-                                <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-auto md:h-auto max-h-[85vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700">
-                                  <div className="overflow-y-auto max-h-[85vh] p-6">
-                                    <DialogHeader>
-                                      <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
-                                        Edit Property
-                                      </DialogTitle>
-                                    </DialogHeader>
+                                  <DialogTrigger asChild>
+                                    <button
+                                      onClick={() =>
+                                        handleEditButtonClick(listing)
+                                      }
+                                      className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800"
+                                    >
+                                      Edit
+                                    </button>
+                                  </DialogTrigger>
+                                  <DialogPortal>
+                                    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
+                                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-auto md:h-auto max-h-[85vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700">
+                                      <div className="overflow-y-auto max-h-[85vh] p-6">
+                                        <DialogHeader>
+                                          <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
+                                            Edit Property
+                                          </DialogTitle>
+                                        </DialogHeader>
+                                        {/* Image Slideshow Section */}
+                                        {editingListing && (
+                                          <div className="relative w-full h-[300px] bg-black/20 mb-4">
+                                            <img
+                                              src={
+                                                [
+                                                  editingListing.mainimage,
+                                                  ...editingListing.additionalimages,
+                                                ][currentImageIndex]
+                                              }
+                                              alt={`Property image ${
+                                                currentImageIndex + 1
+                                              }`}
+                                              className="w-full h-[300px] rounded object-cover"
+                                            />
 
-                                    {editingListing && (
-                                      <div className="space-y-4">
-                                        <div>
-                                          <label className="block text-sm font-medium text-gray-200 activeFont">
-                                            Property Title
-                                          </label>
-                                          <input
-                                            type="text"
-                                            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                                            value={editingListing.propertytitle}
-                                            onChange={(e) =>
-                                              handleInputChange(
-                                                "propertytitle",
-                                                e.target.value
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="block text-sm font-medium text-gray-200 activeFont">
-                                            Property Description
-                                          </label>
-                                          <textarea
-                                            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                                            value={
-                                              editingListing.propertydescription
-                                            }
-                                            onChange={(e) =>
-                                              handleInputChange(
-                                                "propertydescription",
-                                                e.target.value
-                                              )
-                                            }
-                                          />
-                                        </div>
-                                        <div>
-                                          <label className="block text-sm font-medium text-gray-200 activeFont">
-                                            Property Price
-                                          </label>
-                                          <input
-                                            type="number"
-                                            className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                                            value={editingListing.propertyprice}
-                                            onChange={(e) =>
-                                              handleInputChange(
-                                                "propertyprice",
-                                                e.target.value
-                                              )
-                                            }
-                                          />
+                                            {/* Navigation Arrows */}
+                                            <button
+                                              onClick={handlePrevImage}
+                                              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                                            >
+                                              <ChevronLeft size={24} />
+                                            </button>
+                                            <button
+                                              onClick={handleNextImage}
+                                              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                                            >
+                                              <ChevronRight size={24} />
+                                            </button>
+
+                                            {/* Image Counter */}
+                                            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm">
+                                              {currentImageIndex + 1} /{" "}
+                                              {
+                                                [
+                                                  editingListing.mainimage,
+                                                  ...editingListing.additionalimages,
+                                                ].length
+                                              }
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {editingListing && (
+                                          <div className="space-y-4">
+                                            <div>
+                                              <label className="block text-sm font-medium text-gray-200 activeFont">
+                                                Property Title
+                                              </label>
+                                              <input
+                                                type="text"
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                value={
+                                                  editingListing.propertytitle
+                                                }
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    "propertytitle",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <div>
+                                              <label className="block text-sm font-medium text-gray-200 activeFont">
+                                                Property Description
+                                              </label>
+                                              <textarea
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                value={
+                                                  editingListing.propertydescription
+                                                }
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    "propertydescription",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                            <div>
+                                              <label className="block text-sm font-medium text-gray-200 activeFont">
+                                                Property Price
+                                              </label>
+                                              <input
+                                                type="number"
+                                                className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                                                value={
+                                                  editingListing.propertyprice
+                                                }
+                                                onChange={(e) =>
+                                                  handleInputChange(
+                                                    "propertyprice",
+                                                    e.target.value
+                                                  )
+                                                }
+                                              />
+                                            </div>
+                                          </div>
+                                        )}
+
+                                        {/* Action Buttons */}
+                                        <div className="mt-6 flex justify-end space-x-2">
+                                          <button
+                                            className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
+                                            onClick={saveEditedProperty}
+                                          >
+                                            Save
+                                          </button>
+                                          <DialogTrigger asChild>
+                                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                                              Cancel
+                                            </button>
+                                          </DialogTrigger>
                                         </div>
                                       </div>
-                                    )}
+                                    </DialogContent>
+                                  </DialogPortal>
+                                </Dialog>
 
-                                    {/* Action Buttons */}
-                                    <div className="mt-6 flex justify-end space-x-2">
-                                      <button
-                                        className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                                        onClick={saveEditedProperty}
-                                      >
-                                        Save
-                                      </button>
-                                      <DialogTrigger asChild>
-                                        <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                                          Cancel
-                                        </button>
-                                      </DialogTrigger>
-                                    </div>
-                                  </div>
-                                </DialogContent>
-                              </DialogPortal>
-                            </Dialog>
-
-                            {/* Delist Button */}
-                            <button
-                              onClick={() => delistFunction(listing.id)}
-                              className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600"
-                            >
-                              Delist
-                            </button>
-                          </div>
-                        </td>
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+                                {/* Delist Button */}
+                                <button
+                                  onClick={() => delistFunction(listing.id)}
+                                  className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600"
+                                >
+                                  Delist
+                                </button>
+                              </div>
+                            </td>
+                          </tr>
+                        ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
+        </>
+      )}
     </div>
   );
 };

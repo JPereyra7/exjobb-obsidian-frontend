@@ -1,3 +1,5 @@
+// Dashboard.tsx
+
 import { useEffect, useState } from "react";
 import { SidebarComponent } from "../components/Sidebar";
 import "../styles/dashboard.css";
@@ -10,24 +12,15 @@ import { supabase } from "../supabaseClient";
 import vindictiveLogo from "../assets/vindictive-white-vector.png";
 import {
   Dialog,
-  DialogTrigger,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogOverlay,
   DialogPortal,
+  DialogClose,
 } from "../../components/ui/dialog";
 import { toast } from "sonner";
-
-export interface iListings {
-  id: string;
-  propertytitle: string;
-  propertydescription: string;
-  propertyprice: number;
-  activelisting: boolean;
-  mainimage: string;
-  additionalimages: string[];
-}
+import { iListings } from "../models/iListings";
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
@@ -84,7 +77,7 @@ export const Dashboard = () => {
     fetchListings();
   }, []);
 
-  //Spinner timeout
+  // Spinner timeout
   useEffect(() => {
     const timer = setTimeout(() => {
       setIsLoading(false);
@@ -96,6 +89,7 @@ export const Dashboard = () => {
   const handleEditButtonClick = (listing: iListings) => {
     setEditingListing(listing);
     setIsDialogOpen(true);
+    setCurrentImageIndex(0); // Reset image index when a new listing is selected
   };
 
   // Save Edited Property
@@ -131,7 +125,7 @@ export const Dashboard = () => {
 
       // Close the dialog and reset editing state
       setIsDialogOpen(false);
-      toast.success("Succesfully edited listing");
+      toast.success("Successfully edited listing");
       setEditingListing(null);
     } catch (error) {
       console.error("Error updating property:", error);
@@ -284,11 +278,9 @@ export const Dashboard = () => {
                         <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-32 md:table-cell">
                           Price
                         </th>
-                        <div className="flex flex-row justify-end">
-                          <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
-                            Actions
-                          </th>
-                        </div>
+                        <th className="px-6 py-3 text-right text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-800">
@@ -315,156 +307,14 @@ export const Dashboard = () => {
                                 ${listing.propertyprice.toLocaleString()}
                               </span>
                             </td>
-                            <td className="px-6 py-4 whitespace-nowrap w-40">
+                            <td className="px-6 py-4 whitespace-nowrap w-40 text-right">
                               <div className="flex flex-row items-center justify-end">
-                                {/* Dialog Component for Edit */}
-                                <Dialog
-                                  open={isDialogOpen}
-                                  onOpenChange={(open) => {
-                                    setIsDialogOpen(open);
-                                    if (!open) setEditingListing(null);
-                                  }}
+                                <button
+                                  onClick={() => handleEditButtonClick(listing)}
+                                  className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800"
                                 >
-                                  <DialogTrigger asChild>
-                                    <button
-                                      onClick={() =>
-                                        handleEditButtonClick(listing)
-                                      }
-                                      className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800"
-                                    >
-                                      Edit
-                                    </button>
-                                  </DialogTrigger>
-                                  <DialogPortal>
-                                    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-                                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
-                                      <div className="h-full overflow-y-auto">
-                                      <div className="p-6 relative z-10">
-                                        <DialogHeader>
-                                          <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
-                                            Edit Property
-                                          </DialogTitle>
-                                        </DialogHeader>
-                                        {/* Image Slideshow Section */}
-                                        {editingListing && (
-                                          <div className="relative w-full h-[300px] bg-black/20 mb-4 z-20">
-                                            <img
-                                              src={
-                                                [
-                                                  editingListing.mainimage,
-                                                  ...editingListing.additionalimages,
-                                                ][currentImageIndex]
-                                              }
-                                              alt={`Property image ${
-                                                currentImageIndex + 1
-                                              }`}
-                                              className="w-full h-[300px] rounded object-cover"
-                                            />
-
-                                            {/* Navigation Arrows */}
-                                            <button
-                                              onClick={handlePrevImage}
-                                              className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-30"
-                                            >
-                                              <ChevronLeft size={24} />
-                                            </button>
-                                            <button
-                                              onClick={handleNextImage}
-                                              className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors z-30"
-                                            >
-                                              <ChevronRight size={24} />
-                                            </button>
-
-                                            {/* Image Counter */}
-                                            <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm z-30">
-                                              {currentImageIndex + 1} /{" "}
-                                              {
-                                                [
-                                                  editingListing.mainimage,
-                                                  ...editingListing.additionalimages,
-                                                ].length
-                                              }
-                                            </div>
-                                          </div>
-                                        )}
-
-                                        {editingListing && (
-                                          <div className="space-y-4">
-                                            <div>
-                                              <label className="block text-sm font-medium text-gray-200 activeFont">
-                                                Property Title
-                                              </label>
-                                              <input
-                                                type="text"
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
-                                                value={
-                                                  editingListing.propertytitle
-                                                }
-                                                onChange={(e) =>
-                                                  handleInputChange(
-                                                    "propertytitle",
-                                                    e.target.value
-                                                  )
-                                                }
-                                              />
-                                            </div>
-                                            <div>
-                                              <label className="block text-sm font-medium text-gray-200 activeFont">
-                                                Property Description
-                                              </label>
-                                              <textarea
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
-                                                value={
-                                                  editingListing.propertydescription
-                                                }
-                                                onChange={(e) =>
-                                                  handleInputChange(
-                                                    "propertydescription",
-                                                    e.target.value
-                                                  )
-                                                }
-                                              />
-                                            </div>
-                                            <div>
-                                              <label className="block text-sm font-medium text-gray-200 activeFont">
-                                                Property Price
-                                              </label>
-                                              <input
-                                                type="number"
-                                                className="mt-1 block w-full p-2 border border-gray-300 rounded relative z-10"
-                                                value={
-                                                  editingListing.propertyprice
-                                                }
-                                                onChange={(e) =>
-                                                  handleInputChange(
-                                                    "propertyprice",
-                                                    e.target.value
-                                                  )
-                                                }
-                                              />
-                                            </div>
-                                          </div>
-                                        )}
-
-                                        {/* Action Buttons */}
-                                        <div className="mt-6 flex justify-end space-x-2">
-                                          <button
-                                            className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                                            onClick={saveEditedProperty}
-                                          >
-                                            Save
-                                          </button>
-                                          <DialogTrigger asChild>
-                                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                                              Cancel
-                                            </button>
-                                          </DialogTrigger>
-                                        </div>
-                                      </div>
-                                      </div>
-                                    </DialogContent>
-                                  </DialogPortal>
-                                </Dialog>
+                                  Edit
+                                </button>
 
                                 {/* Delist Button */}
                                 <button
@@ -481,6 +331,136 @@ export const Dashboard = () => {
                   </table>
                 </div>
               </div>
+
+              {/* Dialog Component */}
+              {isDialogOpen && editingListing && (
+                <Dialog
+                  open={isDialogOpen}
+                  onOpenChange={(open) => {
+                    setIsDialogOpen(open);
+                    if (!open) {
+                      setEditingListing(null);
+                      setCurrentImageIndex(0);
+                    }
+                  }}
+                >
+                  <DialogPortal>
+                    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
+                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
+                      <div className="overflow-y-auto max-h-[85vh] p-6">
+                        <DialogHeader>
+                          <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
+                            Edit Property
+                          </DialogTitle>
+                        </DialogHeader>
+                        {/* Image Slideshow Section */}
+                        <div className="relative w-full h-[300px] bg-black/20 mb-4">
+                          <img
+                            src={
+                              [
+                                editingListing.mainimage,
+                                ...editingListing.additionalimages,
+                              ][currentImageIndex]
+                            }
+                            alt={`Property image ${currentImageIndex + 1}`}
+                            className="w-full h-[300px] rounded object-cover"
+                          />
+
+                          {/* Navigation Arrows */}
+                          <button
+                            onClick={handlePrevImage}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                          >
+                            <ChevronLeft size={24} />
+                          </button>
+                          <button
+                            onClick={handleNextImage}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
+                          >
+                            <ChevronRight size={24} />
+                          </button>
+
+                          {/* Image Counter */}
+                          <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm">
+                            {currentImageIndex + 1} /{" "}
+                            {
+                              [
+                                editingListing.mainimage,
+                                ...editingListing.additionalimages,
+                              ].length
+                            }
+                          </div>
+                        </div>
+
+                        <div className="space-y-4">
+                          <div>
+                            <label className="block text-sm font-medium text-gray-200 activeFont">
+                              Property Title
+                            </label>
+                            <input
+                              type="text"
+                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                              value={editingListing.propertytitle}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "propertytitle",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-200 activeFont">
+                              Property Description
+                            </label>
+                            <textarea
+                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                              value={editingListing.propertydescription}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "propertydescription",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-sm font-medium text-gray-200 activeFont">
+                              Property Price
+                            </label>
+                            <input
+                              type="number"
+                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                              value={editingListing.propertyprice}
+                              onChange={(e) =>
+                                handleInputChange(
+                                  "propertyprice",
+                                  e.target.value
+                                )
+                              }
+                            />
+                          </div>
+                        </div>
+
+                        {/* Action Buttons */}
+                        <div className="mt-6 flex justify-end space-x-2">
+                          <button
+                            className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
+                            onClick={saveEditedProperty}
+                          >
+                            Save
+                          </button>
+                          <DialogClose asChild>
+                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
+                              Cancel
+                            </button>
+                          </DialogClose>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </DialogPortal>
+                </Dialog>
+              )}
             </div>
           </div>
         </>

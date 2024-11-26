@@ -1,20 +1,6 @@
 import axios from 'axios';
+import { iListings, iListingsResponse } from '../models/iListings';
 
-export interface iListings {
-  id: string;
-  propertytitle: string;
-  propertydescription: string;
-  propertyprice: number;
-  activelisting: boolean;
-  mainimage: string;
-  additionalimages: string[];
-}
-
-export interface iListingsResponse {
-  success: boolean;
-  message: string;
-  data: iListings[];
-}
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 

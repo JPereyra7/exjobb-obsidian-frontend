@@ -112,7 +112,7 @@ export function SidebarComponent({ isExpanded, onNewListingClick }: SidebarProps
               {isExpanded && "Inbox"}
             </Sidebar.Item>
             <Sidebar.Item href="#" icon={HiUser}>
-              {isExpanded && "Users"}
+              {isExpanded && "User Settings"}
             </Sidebar.Item>
             <Sidebar.Item href="#" icon={HiShoppingBag}>
               {isExpanded && "Products"}

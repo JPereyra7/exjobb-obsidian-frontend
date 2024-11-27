@@ -1,5 +1,3 @@
-// src/components/Navbar.tsx
-
 import { HiMenu } from "react-icons/hi";
 import Obsidian from "../assets/ObsidianCropped.png";
 import { NavbarProps } from "../models/NavbarProps";
@@ -39,7 +37,13 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
         if (error) {
           console.error('Error fetching user data:', error);
         } else {
-          setUserImage(data.userimage || '');
+          // Append timestamp to userimage for cache related issues when updating profil image
+          const timestamp = new Date().getTime();
+          const userImageWithTimestamp = data.userimage
+            ? `${data.userimage}?t=${timestamp}`
+            : '';
+
+          setUserImage(userImageWithTimestamp);
           setFirstName(data.firstname || '');
           setLastName(data.surname || '');
           setOriginalFirstName(data.firstname || '');
@@ -70,6 +74,10 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
           .getPublicUrl(filePath);
         const publicUrl = publicUrlData.publicUrl;
 
+        // Append timestamp to publicUrl
+        const timestamp = new Date().getTime();
+        const publicUrlWithTimestamp = `${publicUrl}?t=${timestamp}`;
+
         const { error: updateError } = await supabase
           .from('users')
           .update({ userimage: publicUrl })
@@ -79,7 +87,7 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
           console.error('Error updating user image:', updateError);
           toast.error('Error updating profile image');
         } else {
-          setUserImage(publicUrl);
+          setUserImage(publicUrlWithTimestamp);
           toast.success('Profile image updated');
         }
       }
@@ -105,8 +113,6 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
   };
 
   const handleCancel = () => {
-    setFirstName(originalFirstName);
-    setLastName(originalLastName);
     setIsSheetOpen(false);
   };
 
@@ -140,18 +146,18 @@ export const Navbar = ({ isSidebarOpen, setIsSidebarOpen }: NavbarProps) => {
                 }}
               >
                 <div className="flex flex-row items-center gap-3">
-                <p className="text-md lg:text-[17px] text-white activeFont font-semibold">{firstName}</p>
+                  <p className="text-md lg:text-[17px] text-white activeFont font-semibold">{firstName}</p>
 
-                <Avatar className="cursor-pointer mr-6">
-                  {userImage ? (
-                    <AvatarImage src={userImage} alt="User Image" />
-                  ) : (
-                    <AvatarFallback className="text-white">
-                      {user && user.email ? user.email.charAt(0).toUpperCase() : 'U'}
-                    </AvatarFallback>
-                  )}
-                </Avatar>
-                  </div>
+                  <Avatar className="cursor-pointer mr-6">
+                    {userImage ? (
+                      <AvatarImage src={userImage} alt="User Image" />
+                    ) : (
+                      <AvatarFallback className="text-white">
+                        {user && user.email ? user.email.charAt(0).toUpperCase() : 'U'}
+                      </AvatarFallback>
+                    )}
+                  </Avatar>
+                </div>
               </button>
             </SheetTrigger>
             <SheetContent

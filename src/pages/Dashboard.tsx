@@ -214,7 +214,7 @@ export const Dashboard = () => {
     try {
       // Validate inputs
       if (!newListingTitle || !newListingDescription || !newListingPrice || !newListingMainImage) {
-        toast.warning("Please fill out all required fields and select a main image.");
+        toast.warning("Please fill out all required fields and select your images.");
         return;
       }
 
@@ -275,7 +275,7 @@ export const Dashboard = () => {
       }
 
       // Update the listings state
-      setListings((prevListings) => [...prevListings, insertData[0] as iListings]);
+      setListings((prevListings) => [insertData[0] as iListings, ...prevListings]);
       calculateStats([...listings, insertData[0] as iListings]);
 
       // Close the dialog and reset form fields

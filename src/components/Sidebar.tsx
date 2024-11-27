@@ -12,10 +12,7 @@ import {
 } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { CustomFlowbiteTheme } from "flowbite-react";
-
-interface SidebarProps {
-  isExpanded: boolean;
-}
+import { SidebarProps } from "../models/SidebarProps";
 
 // Custom theme for Flowbiteäs sidebar
 const customTheme: CustomFlowbiteTheme['sidebar'] = {
@@ -70,7 +67,7 @@ const customTheme: CustomFlowbiteTheme['sidebar'] = {
   }
 };
 
-export function SidebarComponent({ isExpanded }: SidebarProps) {
+export function SidebarComponent({ isExpanded, onNewListingClick }: SidebarProps) {
   const navigate = useNavigate();
 
   const signOut = () => {
@@ -97,6 +94,7 @@ export function SidebarComponent({ isExpanded }: SidebarProps) {
                 <Sidebar.Item
                   className="cursor-pointer"
                   icon={RiAddBoxLine}
+                  onClick={onNewListingClick}
                 >
                   New Listing
                 </Sidebar.Item>

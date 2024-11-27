@@ -1,10 +1,5 @@
+import { StatsCardProps } from "../models/StatsCardProps";
 import "../styles/dashboardstats.css";
-
-interface StatsCardProps {
-  title: string;
-  value: string | number;
-  icon: JSX.Element;
-}
 
 export const DashboardStats = ({ title, value, icon }: StatsCardProps) => (
   <div

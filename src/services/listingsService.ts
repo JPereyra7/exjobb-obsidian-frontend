@@ -15,3 +15,4 @@ export const getListings = async (): Promise<iListings[]> => {
     throw error;
   }
 };
+ 

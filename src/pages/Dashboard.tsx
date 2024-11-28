@@ -1,26 +1,19 @@
-// Dashboard.tsx
-
 import { useEffect, useState } from "react";
-import { SidebarComponent } from "../components/Sidebar";
+import NavigationMenu from "../components/NavigationMenu";
 import "../styles/dashboard.css";
 import { getListings } from "../services/listingsService";
-import Navbar from "../components/Navbar";
 import { DashboardStats } from "../components/DashboardStats";
 import { DollarSign, Power, House, PowerOff } from "lucide-react";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import { supabase } from "../supabaseClient";
 import vindictiveLogo from "../assets/vindictive-white-vector.png";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogOverlay,
-  DialogPortal,
-  DialogClose,
-} from "../../components/ui/dialog";
-import { toast } from "sonner";
 import { iListings } from "../models/iListings";
+import ActiveProperties from "../components/ActiveProperties";
+import EditListingDialog from "../components/EditListingDialog";
+import AddListingDialog from "../components/AddListingDialog";
+import AgentsList from "../components/AgentsList";
+import AddAgentDialog from "../components/AddAgentDialog";
+import EditAgentDialog from "../components/EditAgentDialog";
+import { iAgent } from "../models/iAgent"; // Agent interface
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
@@ -28,41 +21,20 @@ export const Dashboard = () => {
   const [activeProperties, setActiveProperties] = useState(0);
   const [inactiveProperties, setInactiveProperties] = useState(0);
   const [editingListing, setEditingListing] = useState<iListings | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [isNewListingDialogOpen, setIsNewListingDialogOpen] = useState(false);
-  const [newListingTitle, setNewListingTitle] = useState("");
-  const [newListingDescription, setNewListingDescription] = useState("");
-  const [newListingPrice, setNewListingPrice] = useState("");
-  const [newListingMainImage, setNewListingMainImage] = useState<File | null>(null);
-  const [newListingAdditionalImages, setNewListingAdditionalImages] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [agents, setAgents] = useState<iAgent[]>([]);
+  const [editingAgent, setEditingAgent] = useState<iAgent | null>(null);
+  const [isAddAgentDialogOpen, setIsAddAgentDialogOpen] = useState(false);
 
-  const handlePrevImage = () => {
-    if (!editingListing) return;
-    const totalImages = [
-      editingListing.mainimage,
-      ...editingListing.additionalimages,
-    ].length;
-    setCurrentImageIndex((prev) => (prev - 1 + totalImages) % totalImages);
-  };
-
-  const handleNextImage = () => {
-    if (!editingListing) return;
-    const totalImages = [
-      editingListing.mainimage,
-      ...editingListing.additionalimages,
-    ].length;
-    setCurrentImageIndex((prev) => (prev + 1) % totalImages);
-  };
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
+  const isDesktop = windowWidth >= 1024;
 
   const calculateStats = (data: iListings[]) => {
-    const active = data.filter(
-      (listing) => listing.activelisting === true
-    ).length;
-    const inactive = data.filter(
-      (listing) => listing.activelisting === false
-    ).length;
+    const active = data.filter((listing) => listing.activelisting === true)
+      .length;
+    const inactive = data.filter((listing) => listing.activelisting === false)
+      .length;
 
     setActiveProperties(active);
     setInactiveProperties(inactive);
@@ -83,6 +55,55 @@ export const Dashboard = () => {
     fetchListings();
   }, []);
 
+  useEffect(() => {
+    const fetchAgents = async () => {
+      const { data, error } = await supabase.from("agents").select("*");
+      if (error) {
+        console.error("Error fetching agents:", error);
+      } else {
+        setAgents(data as iAgent[]);
+      }
+    };
+
+    fetchAgents();
+  }, []);
+
+  const deleteAgent = async (agentId: string) => {
+    try {
+      const { error } = await supabase
+        .from("agents")
+        .delete()
+        .eq("id", agentId);
+      if (error) throw error;
+
+      setAgents((prevAgents) =>
+        prevAgents.filter((agent) => agent.id !== agentId)
+      );
+
+      console.log("Agent deleted successfully");
+    } catch (error) {
+      console.error("Error deleting agent:", error);
+    }
+  };
+
+  const handleEditAgentButtonClick = (agent: iAgent) => {
+    setEditingAgent(agent);
+  };
+
+  const handleSaveEditedAgent = (updatedAgent: iAgent) => {
+    setAgents((prevAgents) =>
+      prevAgents.map((agent) =>
+        agent.id === updatedAgent.id ? updatedAgent : agent
+      )
+    );
+    setEditingAgent(null);
+  };
+
+  const handleAddAgent = (newAgent: iAgent) => {
+    setAgents((prevAgents) => [newAgent, ...prevAgents]);
+    setIsAddAgentDialogOpen(false);
+  };
+
   // Spinner timeout
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -91,74 +112,7 @@ export const Dashboard = () => {
     return () => clearTimeout(timer);
   }, []);
 
-  // Function to handle Edit button click
-  const handleEditButtonClick = (listing: iListings) => {
-    setEditingListing(listing);
-    setIsDialogOpen(true);
-    setCurrentImageIndex(0);
-  };
-
-  // Save Edited Property
-  const saveEditedProperty = async () => {
-    if (!editingListing) return;
-
-    try {
-      const updatedData = {
-        propertytitle: editingListing.propertytitle,
-        propertydescription: editingListing.propertydescription,
-        propertyprice: Number(editingListing.propertyprice),
-      };
-
-      const { error } = await supabase
-        .from("properties")
-        .update(updatedData)
-        .eq("id", editingListing.id);
-
-      if (error) throw error;
-
-      // Update the listing in the frontend state
-      setListings((prevListings) =>
-        prevListings.map((listing) =>
-          listing.id === editingListing.id
-            ? {
-                ...listing,
-                ...updatedData,
-                propertyprice: Number(editingListing.propertyprice),
-              }
-            : listing
-        )
-      );
-
-      // Close the dialog and reset editing state
-      setIsDialogOpen(false);
-      toast.success("Successfully edited listing");
-      setEditingListing(null);
-    } catch (error) {
-      console.error("Error updating property:", error);
-    }
-  };
-
-  // Handle input changes for editing
-  const handleInputChange = (
-    field: keyof Pick<
-      iListings,
-      "propertytitle" | "propertydescription" | "propertyprice"
-    >,
-    value: string
-  ) => {
-    if (!editingListing) return;
-
-    setEditingListing((prev) => {
-      if (!prev) return prev;
-
-      return {
-        ...prev,
-        [field]: field === "propertyprice" ? Number(value) || 0 : value,
-      };
-    });
-  };
-
-  // Delist function (Supabase handler) + Recalculate stats and remove table row
+  // Delist function
   const delistFunction = async (propertyId: string) => {
     try {
       const { data, error } = await supabase
@@ -190,8 +144,9 @@ export const Dashboard = () => {
   // Handle window resize
   useEffect(() => {
     const handleResize = () => {
-      const isDesktop = window.innerWidth >= 1024;
-      setIsSidebarOpen(isDesktop);
+      setWindowWidth(window.innerWidth);
+      const isNowDesktop = window.innerWidth >= 1024;
+      setIsSidebarOpen(isNowDesktop);
     };
 
     window.addEventListener("resize", handleResize);
@@ -205,92 +160,16 @@ export const Dashboard = () => {
 
   // Handle New Listing Click from Sidebar
   const handleNewListing = () => {
-    console.log("New Listing Clicked");
     setIsNewListingDialogOpen(true);
   };
 
-  // Handle Adding New Listing
-  const handleAddListing = async () => {
-    try {
-      // Validate inputs
-      if (!newListingTitle || !newListingDescription || !newListingPrice || !newListingMainImage) {
-        toast.warning("Please fill out all required fields and select your images.");
-        return;
-      }
+  const handleNewAgent = () => {
+    setIsAddAgentDialogOpen(true);
+  };
 
-      // Upload main image to Supabase storage
-      const mainImagePath = `properties/${Date.now()}_${newListingMainImage.name}`;
-      const { error: mainImageUploadError } = await supabase.storage
-        .from('images')
-        .upload(mainImagePath, newListingMainImage);
-
-      if (mainImageUploadError) {
-        throw mainImageUploadError;
-      }
-
-      // Get the public URL of the main image
-      const { data: mainImageUrlData } = supabase.storage
-        .from('images')
-        .getPublicUrl(mainImagePath);
-
-      const mainImageUrl = mainImageUrlData.publicUrl;
-
-      // Upload additional images
-      const additionalImageUrls: string[] = [];
-      for (let i = 0; i < newListingAdditionalImages.length; i++) {
-        const image = newListingAdditionalImages[i];
-        const imagePath = `properties/${Date.now()}_${image.name}`;
-        const { error: imageUploadError } = await supabase.storage
-          .from('images')
-          .upload(imagePath, image);
-
-        if (imageUploadError) {
-          throw imageUploadError;
-        }
-
-        const { data: imageUrlData } = supabase.storage
-          .from('images')
-          .getPublicUrl(imagePath);
-
-        additionalImageUrls.push(imageUrlData.publicUrl);
-      }
-
-      // Insert new listing into the postgres database supabase
-      const newListing = {
-        propertytitle: newListingTitle,
-        propertydescription: newListingDescription,
-        propertyprice: parseFloat(newListingPrice),
-        activelisting: true,
-        mainimage: mainImageUrl,
-        additionalimages: additionalImageUrls,
-      };
-
-      const { data: insertData, error: insertError } = await supabase
-        .from('properties')
-        .insert([newListing])
-        .select('*');
-
-      if (insertError) {
-        throw insertError;
-      }
-
-      // Update the listings state
-      setListings((prevListings) => [insertData[0] as iListings, ...prevListings]);
-      calculateStats([...listings, insertData[0] as iListings]);
-
-      // Close the dialog and reset form fields
-      setIsNewListingDialogOpen(false);
-      setNewListingTitle("");
-      setNewListingDescription("");
-      setNewListingPrice("");
-      setNewListingMainImage(null);
-      setNewListingAdditionalImages([]);
-
-      toast.success("Successfully added new listing");
-    } catch (error) {
-      console.error("Error adding new listing:", error);
-      toast.error("Error adding new listing");
-    }
+  // Function to handle Edit button click
+  const handleEditButtonClick = (listing: iListings) => {
+    setEditingListing(listing);
   };
 
   return (
@@ -307,373 +186,111 @@ export const Dashboard = () => {
         </div>
       ) : (
         <>
-          <Navbar
+          {/* Navigation Menu */}
+          <NavigationMenu
             isSidebarOpen={isSidebarOpen}
             setIsSidebarOpen={setIsSidebarOpen}
+            onNewListingClick={handleNewListing}
+            onNewAgentClick={handleNewAgent}
           />
 
-          <div className="flex relative">
-            {/* Sidebar with overlay */}
-            <div
-              className={`fixed lg:relative z-30 h-[calc(100vh-3.5rem)] transition-transform duration-300 ease-in-out ${
-                isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
-            >
-              <SidebarComponent
-                isExpanded={isSidebarOpen}
-                onNewListingClick={handleNewListing}
+          {/* Main Content */}
+          <div
+            className="p-4 overflow-y-auto"
+            style={{
+              marginLeft: isDesktop ? (isSidebarOpen ? "16rem" : "4rem") : "0",
+              marginTop: "3.5rem", // Adjust according to Navbar's height
+              height: `calc(100vh - 3.5rem)`,
+            }}
+          >
+            {/* Stats Section */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+              <DashboardStats
+                title="Total Value"
+                value={`$ ${totalValue.toLocaleString()}`}
+                icon={<DollarSign size={24} className="text-emerald-500" />}
+              />
+              <DashboardStats
+                title="Total Properties"
+                value={listings.length}
+                icon={<House size={24} className="text-blue-500" />}
+              />
+              <DashboardStats
+                title="Active Properties"
+                value={activeProperties}
+                icon={<Power size={24} className="text-lime-300" />}
+              />
+              <DashboardStats
+                title="Inactive Properties"
+                value={inactiveProperties}
+                icon={<PowerOff size={24} className="text-red-400" />}
               />
             </div>
 
-            {/* Overlay for mobile only */}
-            {isSidebarOpen && (
-              <div
-                className="fixed inset-0 bg-black bg-opacity-50 z-20 lg:hidden"
-                onClick={() => setIsSidebarOpen(false)}
+            {/* Active Properties */}
+            <ActiveProperties
+              listings={listings}
+              handleEditButtonClick={handleEditButtonClick}
+              delistFunction={delistFunction}
+            />
+
+            {/* Edit Listing Dialog */}
+            {editingListing && (
+              <EditListingDialog
+                listing={editingListing}
+                onClose={() => setEditingListing(null)}
+                onSave={(updatedListing) => {
+                  setListings((prevListings) =>
+                    prevListings.map((listing) =>
+                      listing.id === updatedListing.id
+                        ? updatedListing
+                        : listing
+                    )
+                  );
+                  setEditingListing(null);
+                }}
               />
             )}
 
-            {/* Main Content */}
-            <div className="flex-1 p-4 overflow-x-auto">
-              {/* Stats Section */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-                <DashboardStats
-                  title="Total Value"
-                  value={`$ ${totalValue.toLocaleString()}`}
-                  icon={<DollarSign size={24} className="text-emerald-500" />}
-                />
-                <DashboardStats
-                  title="Total Properties"
-                  value={listings.length}
-                  icon={<House size={24} className="text-blue-500" />}
-                />
-                <DashboardStats
-                  title="Active Properties"
-                  value={activeProperties}
-                  icon={<Power size={24} className="text-lime-300" />}
-                />
-                <DashboardStats
-                  title="Inactive Properties"
-                  value={inactiveProperties}
-                  icon={<PowerOff size={24} className="text-red-400" />}
-                />
-              </div>
+            {/* Add New Listing Dialog */}
+            {isNewListingDialogOpen && (
+              <AddListingDialog
+                onClose={() => setIsNewListingDialogOpen(false)}
+                onAdd={(newListing) => {
+                  setListings((prevListings) => [newListing, ...prevListings]);
+                  calculateStats([newListing, ...listings]);
+                }}
+              />
+            )}
 
-              {/* Active Properties Header + Table */}
-              <div className="rounded-[5px] border border-gray-700">
-                <h1 className="text-lg font-semibold text-white bg-gradient-to-tr from-[#010102] to-[#1e293b] px-6 py-6 border-b border-gray-800 activeFont">
-                  Active Properties
-                </h1>
-                <div className="overflow-x-auto overflow-y-scroll h-[calc(100vh-20rem)] no-scrollbar">
-                  <table className="min-w-full bg-gradient-to-tr from-[#010102] to-[#1e293b] table-fixed">
-                    <thead className="border-b-2 border-gray-800">
-                      <tr>
-                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
-                          Image
-                        </th>
-                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-64">
-                          Listing Name
-                        </th>
-                        <th className="px-6 py-3 text-left text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-32 md:table-cell">
-                          Price
-                        </th>
-                        <th className="px-6 py-3 text-right text-[0.85em] text-gray-400 font-semibold tracking-wider activeFont w-40">
-                          Actions
-                        </th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-800">
-                      {listings
-                        .filter((listing) => listing.activelisting)
-                        .map((listing) => (
-                          <tr key={listing.id}>
-                            <td className="px-4 py-2 whitespace-nowrap w-20">
-                              <img
-                                src={listing.mainimage}
-                                alt={listing.propertytitle}
-                                className="w-16 h-16 object-cover rounded"
-                              />
-                            </td>
-                            <td className="px-6 py-4 whitespace-normal w-64">
-                              <div className="text-s text-gray-100 font-bold">
-                                <span className="text-sm md:text-base text-gray-100 font-semibold activeFont">
-                                  {listing.propertytitle}
-                                </span>
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap w-32 md:table-cell">
-                              <span className="text-m text-gray-100 font-semibold activeFont">
-                                ${listing.propertyprice.toLocaleString()}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap w-40 text-right">
-                              <div className="flex flex-row items-center justify-end">
-                                <button
-                                  onClick={() => handleEditButtonClick(listing)}
-                                  className="bg-teal-600 text-white px-3 py-1 rounded mr-2 hover:bg-teal-800"
-                                >
-                                  Edit
-                                </button>
+            {/* Agents List */}
+            <AgentsList
+              agents={agents}
+              handleEditButtonClick={handleEditAgentButtonClick}
+              deleteAgent={deleteAgent}
+            />
 
-                                {/* Delist Button */}
-                                <button
-                                  onClick={() => delistFunction(listing.id)}
-                                  className="bg-amber-500 text-white px-3 py-1 rounded hover:bg-amber-600"
-                                >
-                                  Delist
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
-                </div>
-              </div>
+            {/* Edit Agent Dialog */}
+            {editingAgent && (
+              <EditAgentDialog
+                agent={editingAgent}
+                onClose={() => setEditingAgent(null)}
+                onSave={handleSaveEditedAgent}
+              />
+            )}
 
-              {/* Edit Dialog Component */}
-              {isDialogOpen && editingListing && (
-                <Dialog
-                  open={isDialogOpen}
-                  onOpenChange={(open) => {
-                    setIsDialogOpen(open);
-                    if (!open) {
-                      setEditingListing(null);
-                      setCurrentImageIndex(0);
-                    }
-                  }}
-                >
-                  <DialogPortal>
-                    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
-                      <div className="overflow-y-auto max-h-[85vh] p-6">
-                        <DialogHeader>
-                          <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
-                            Edit Property
-                          </DialogTitle>
-                        </DialogHeader>
-                        {/* Image Slideshow Section */}
-                        <div className="relative w-full h-[300px] bg-black/20 mb-4">
-                          <img
-                            src={
-                              [
-                                editingListing.mainimage,
-                                ...editingListing.additionalimages,
-                              ][currentImageIndex]
-                            }
-                            alt={`Property image ${currentImageIndex + 1}`}
-                            className="w-full h-[300px] rounded object-cover"
-                          />
-
-                          {/* Navigation Arrows */}
-                          <button
-                            onClick={handlePrevImage}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-                          >
-                            <ChevronLeft size={24} />
-                          </button>
-                          <button
-                            onClick={handleNextImage}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full bg-black/50 hover:bg-black/70 text-white transition-colors"
-                          >
-                            <ChevronRight size={24} />
-                          </button>
-
-                          {/* Image Counter */}
-                          <div className="absolute bottom-2 right-2 px-2 py-1 bg-black/50 rounded text-white text-sm">
-                            {currentImageIndex + 1} /{" "}
-                            {
-                              [
-                                editingListing.mainimage,
-                                ...editingListing.additionalimages,
-                              ].length
-                            }
-                          </div>
-                        </div>
-
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Title
-                            </label>
-                            <input
-                              type="text"
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={editingListing.propertytitle}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "propertytitle",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Description
-                            </label>
-                            <textarea
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={editingListing.propertydescription}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "propertydescription",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Price
-                            </label>
-                            <input
-                              type="number"
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={editingListing.propertyprice}
-                              onChange={(e) =>
-                                handleInputChange(
-                                  "propertyprice",
-                                  e.target.value
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="mt-6 flex justify-end space-x-2">
-                          <button
-                            className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                            onClick={saveEditedProperty}
-                          >
-                            Save
-                          </button>
-                          <DialogClose asChild>
-                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                              Cancel
-                            </button>
-                          </DialogClose>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </DialogPortal>
-                </Dialog>
-              )}
-
-              {/* Add New Listing Dialog */}
-              {isNewListingDialogOpen && (
-                <Dialog
-                  open={isNewListingDialogOpen}
-                  onOpenChange={(open) => {
-                    setIsNewListingDialogOpen(open);
-                    if (!open) {
-                      // Reset form fields
-                      setNewListingTitle("");
-                      setNewListingDescription("");
-                      setNewListingPrice("");
-                      setNewListingMainImage(null);
-                      setNewListingAdditionalImages([]);
-                    }
-                  }}
-                >
-                  <DialogPortal>
-                    <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-                    <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
-                      <div className="overflow-y-auto max-h-[85vh] p-6">
-                        <DialogHeader>
-                          <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
-                            Add New Listing
-                          </DialogTitle>
-                        </DialogHeader>
-                        {/* Form Fields */}
-                        <div className="space-y-4">
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Title
-                            </label>
-                            <input
-                              type="text"
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={newListingTitle}
-                              onChange={(e) => setNewListingTitle(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Description
-                            </label>
-                            <textarea
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={newListingDescription}
-                              onChange={(e) => setNewListingDescription(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Property Price
-                            </label>
-                            <input
-                              type="number"
-                              className="mt-1 block w-full p-2 border border-gray-300 rounded"
-                              value={newListingPrice}
-                              onChange={(e) => setNewListingPrice(e.target.value)}
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Main Image
-                            </label>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              className="mt-1 block w-full p-2 border border-gray-700 rounded text-gray-300 activeFont pl-[2em]"
-                              onChange={(e) =>
-                                setNewListingMainImage(e.target.files ? e.target.files[0] : null)
-                              }
-                            />
-                          </div>
-                          <div>
-                            <label className="block text-sm font-medium text-gray-200 activeFont">
-                              Additional Images
-                            </label>
-                            <input
-                              type="file"
-                              accept="image/*"
-                              multiple
-                              className="mt-1 block w-full p-2 border border-gray-700 rounded text-gray-300 activeFont pl-[2em]"
-                              onChange={(e) =>
-                                setNewListingAdditionalImages(
-                                  e.target.files ? Array.from(e.target.files) : []
-                                )
-                              }
-                            />
-                          </div>
-                        </div>
-
-                        {/* Action Buttons */}
-                        <div className="mt-6 flex justify-end space-x-2">
-                          <button
-                            className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                            onClick={handleAddListing}
-                          >
-                            Save
-                          </button>
-                          <DialogClose asChild>
-                            <button className="bg-gray-600 text-white px-4 py-2 rounded hover:bg-gray-700">
-                              Cancel
-                            </button>
-                          </DialogClose>
-                        </div>
-                      </div>
-                    </DialogContent>
-                  </DialogPortal>
-                </Dialog>
-              )}
-            </div>
+            {/* Add Agent Dialog */}
+            {isAddAgentDialogOpen && (
+              <AddAgentDialog
+                onClose={() => setIsAddAgentDialogOpen(false)}
+                onAdd={handleAddAgent}
+              />
+            )}
           </div>
         </>
       )}
     </div>
   );
 };
+
+export default Dashboard;

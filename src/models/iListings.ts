@@ -6,6 +6,7 @@ export interface iListings {
     activelisting: boolean;
     mainimage: string;
     additionalimages: string[];
+    category: string[];
   }
 
 export interface iListingsResponse {

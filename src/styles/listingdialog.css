@@ -1,0 +1,6 @@
+.customSelect:hover {
+    background: linear-gradient(135deg, #010102, #1e293b);
+    color: #ffffff;
+    cursor: pointer;
+    border-radius: 3px;
+  }

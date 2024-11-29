@@ -179,8 +179,7 @@ const NavigationMenu = ({
       button:
         "group flex w-full items-center rounded-lg p-2 text-base font-normal text-gray-200 transition duration-75 hover:bg-gray-700 hover:text-white",
       icon: {
-        base:
-          "h-6 w-6 text-gray-300 transition duration-75 group-hover:text-white",
+        base: "h-6 w-6 text-gray-300 transition duration-75 group-hover:text-white",
         open: {
           off: "",
           on: "text-gray-200",
@@ -198,8 +197,7 @@ const NavigationMenu = ({
       },
     },
     item: {
-      base:
-        "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-200 hover:bg-gray-700 hover:text-white",
+      base: "flex items-center justify-center rounded-lg p-2 text-base font-normal text-gray-200 hover:bg-gray-700 hover:text-white",
       active: "bg-gray-700 text-gray-200",
       collapsed: {
         insideCollapse: "group w-full pl-8 transition duration-75",
@@ -209,8 +207,7 @@ const NavigationMenu = ({
         base: "px-3 flex-1 whitespace-nowrap",
       },
       icon: {
-        base:
-          "h-6 w-6 flex-shrink-0 text-gray-300 transition duration-75 group-hover:text-white",
+        base: "h-6 w-6 flex-shrink-0 text-gray-300 transition duration-75 group-hover:text-white",
         active: "text-gray-200",
       },
     },
@@ -233,11 +230,7 @@ const NavigationMenu = ({
           >
             <HiMenu size={24} />
           </button>
-          <img
-            src={Obsidian}
-            alt="Obsidian Logo"
-            className="lg:h-6 h-5 ml-3"
-          />
+          <img src={Obsidian} alt="Obsidian Logo" className="lg:h-6 h-5 ml-3" />
         </div>
 
         {/* Avatar and Sheet */}
@@ -354,7 +347,7 @@ const NavigationMenu = ({
       {/* Sidebar menyn*/}
       <div
         className={`fixed left-0 z-30 h-full transition-transform duration-300 ease-in-out ${
-          isSidebarOpen || isDesktop ? "translate-x-0" : "-translate-x-full"
+          isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{
           marginTop: "",

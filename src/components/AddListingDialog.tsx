@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import '../styles/listingdialog.css'
+import { useState, useEffect } from 'react';
+import '../styles/listingdialog.css';
 import {
   Dialog,
   DialogContent,
@@ -8,6 +10,14 @@ import {
   DialogPortal,
   DialogClose,
 } from '../../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { supabase } from '../supabaseClient';
 import { toast } from 'sonner';
 import { iListings } from '../models/iListings';
@@ -19,12 +29,29 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
   const [newListingPrice, setNewListingPrice] = useState('');
   const [newListingMainImage, setNewListingMainImage] = useState<File | null>(null);
   const [newListingAdditionalImages, setNewListingAdditionalImages] = useState<File[]>([]);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(''); // Changed to string
+
+  useEffect(() => {
+    // Fetch categories my Supabase db
+    setCategories(['villas', 'spain', 'apartments', 'new_releases']);
+  }, []);
 
   const handleAddListing = async () => {
     try {
       // Validate inputs
-      if (!newListingTitle || !newListingDescription || !newListingPrice || !newListingMainImage) {
+      if (
+        !newListingTitle ||
+        !newListingDescription ||
+        !newListingPrice ||
+        !newListingMainImage
+      ) {
         toast.warning('Please fill out all required fields and select your images.');
+        return;
+      }
+
+      if (!selectedCategory) {
+        toast.warning('Please select a category.');
         return;
       }
 
@@ -73,6 +100,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
         activelisting: true,
         mainimage: mainImageUrl,
         additionalimages: additionalImageUrls,
+        category: [selectedCategory],
       };
 
       const { data: insertData, error: insertError } = await supabase
@@ -98,7 +126,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
     <Dialog open onOpenChange={onClose}>
       <DialogPortal>
         <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-        <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
+        <DialogContent className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] md:w-[500px] max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
           <div className="overflow-y-auto max-h-[85vh] p-6 no-scrollbar">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
@@ -113,7 +141,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
                 </label>
                 <input
                   type="text"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={newListingTitle}
                   onChange={(e) => setNewListingTitle(e.target.value)}
                 />
@@ -123,7 +151,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
                   Property Description
                 </label>
                 <textarea
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={newListingDescription}
                   onChange={(e) => setNewListingDescription(e.target.value)}
                 />
@@ -134,7 +162,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
                 </label>
                 <input
                   type="number"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={newListingPrice}
                   onChange={(e) => setNewListingPrice(e.target.value)}
                 />
@@ -146,7 +174,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
                 <input
                   type="file"
                   accept="image/*"
-                  className="mt-1 block w-full p-2 border border-gray-700 rounded text-gray-300 activeFont pl-[2em]"
+                  className="mt-1 block w-full p-1 border border-gray-700 rounded text-gray-300 activeFont pl-[2em] bg-gray-800"
                   onChange={(e) =>
                     setNewListingMainImage(e.target.files ? e.target.files[0] : null)
                   }
@@ -160,13 +188,39 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
                   type="file"
                   accept="image/*"
                   multiple
-                  className="mt-1 block w-full p-2 border border-gray-700 rounded text-gray-300 activeFont pl-[2em]"
+                  className="mt-1 block w-full p-1 border border-gray-700 rounded text-gray-300 activeFont pl-[2em] bg-gray-800"
                   onChange={(e) =>
                     setNewListingAdditionalImages(
                       e.target.files ? Array.from(e.target.files) : []
                     )
                   }
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-200 activeFont">
+                  Category
+                </label>
+                <Select
+                  onValueChange={(value) => setSelectedCategory(value)}
+                  value={selectedCategory}
+                >
+                  <SelectTrigger className="mt-1 w-full bg-white text-black border border-gray-300 rounded">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white text-black">
+                    <SelectGroup>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category}
+                          value={category}
+                          className="customSelect"
+                        >
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

@@ -1,3 +1,6 @@
+import '../styles/listingdialog.css'
+import { useState, useEffect } from 'react';
+import '../styles/listingdialog.css';
 import {
   Dialog,
   DialogContent,
@@ -7,16 +10,39 @@ import {
   DialogPortal,
   DialogClose,
 } from '../../components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '../../components/ui/select';
 import { iListings } from '../models/iListings';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { supabase } from '../supabaseClient';
 import { toast } from 'sonner';
 import { EditListingDialogProps } from '../models/EditListingDialogProps';
-import { useState } from 'react';
 
 const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps) => {
   const [currentListing, setCurrentListing] = useState<iListings>(listing);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [categories, setCategories] = useState<string[]>([]);
+  const [selectedCategory, setSelectedCategory] = useState<string>(
+    currentListing.category[0] || ''
+  );
+
+  useEffect(() => {
+    // Fetching my categories from Supabase
+    setCategories(['villas', 'spain', 'apartments', 'new_releases']);
+  }, []);
+
+  useEffect(() => {
+    setCurrentListing((prev) => ({
+      ...prev,
+      category: [selectedCategory],
+    }));
+  }, [selectedCategory]);
 
   const handlePrevImage = () => {
     const totalImages = [currentListing.mainimage, ...currentListing.additionalimages].length;
@@ -44,6 +70,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
         propertytitle: currentListing.propertytitle,
         propertydescription: currentListing.propertydescription,
         propertyprice: Number(currentListing.propertyprice),
+        category: [selectedCategory],
       };
 
       const { error } = await supabase
@@ -65,7 +92,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
     <Dialog open onOpenChange={onClose}>
       <DialogPortal>
         <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
-        <DialogContent className="fixed left-[50%] top-[50%] translate-x-[-50%] translate-y-[-50%] z-50 w-[90vw] md:w-[500px] h-[90vh] md:h-auto max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
+        <DialogContent className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] md:w-[500px] max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border-slate-700 overflow-hidden">
           <div className="overflow-y-auto max-h-[85vh] p-6">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold mb-2 text-slate-400 activeFont tracking-normal">
@@ -107,7 +134,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
                 </label>
                 <input
                   type="text"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={currentListing.propertytitle}
                   onChange={(e) => handleInputChange('propertytitle', e.target.value)}
                 />
@@ -117,7 +144,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
                   Property Description
                 </label>
                 <textarea
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={currentListing.propertydescription}
                   onChange={(e) => handleInputChange('propertydescription', e.target.value)}
                 />
@@ -128,10 +155,36 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
                 </label>
                 <input
                   type="number"
-                  className="mt-1 block w-full p-2 border border-gray-300 rounded"
+                  className="mt-1 block w-full p-2 border border-gray-300 rounded bg-white text-black"
                   value={currentListing.propertyprice}
                   onChange={(e) => handleInputChange('propertyprice', e.target.value)}
                 />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-200 activeFont">
+                  Category
+                </label>
+                <Select
+                  onValueChange={(value) => setSelectedCategory(value)}
+                  value={selectedCategory}
+                >
+                  <SelectTrigger className="mt-1 w-full bg-white text-black border border-gray-300 rounded">
+                    <SelectValue placeholder="Select a category" />
+                  </SelectTrigger>
+                  <SelectContent className="bg-white text-black">
+                    <SelectGroup>
+                      {categories.map((category) => (
+                        <SelectItem
+                          key={category}
+                          value={category}
+                          className="customSelect"
+                        >
+                          {category}
+                        </SelectItem>
+                      ))}
+                    </SelectGroup>
+                  </SelectContent>
+                </Select>
               </div>
             </div>
 

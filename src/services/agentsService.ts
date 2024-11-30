@@ -1,12 +1,12 @@
 import axios from 'axios';
 import { iAgent, iAgentsResponse } from '../models/iAgent';
 
-const AGENT_URL = import.meta.env.VITE_BASE_AGENTSURL;
+const AGENT = import.meta.env.VITE_BASE_AGENTSURL;
 
 //API call to handle GET
 export const getAgents = async (): Promise<iAgent[]> => {
   try {
-    const response = await axios.get<iAgentsResponse>(AGENT_URL);
+    const response = await axios.get<iAgentsResponse>(AGENT);
     console.log("API Response:", response.data);
     return response.data.data;
   } catch (error) {

@@ -63,6 +63,7 @@ export const Dashboard = () => {
     const fetchAgents = async () => {
       try {
         const data = await getAgents();
+        console.log("Fetched Agents Data:", data);
         setAgents(data);
       } catch (error) {
         console.error("Error fetching listings:", error);

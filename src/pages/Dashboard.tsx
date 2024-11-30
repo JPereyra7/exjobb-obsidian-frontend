@@ -62,6 +62,7 @@ export const Dashboard = () => {
   useEffect(() => {
     const fetchAgents = async () => {
       try {
+        console.log("Agent URL:", import.meta.env.VITE_BASE_AGENTSURL);
         const data = await getAgents();
         console.log("Fetched Agents Data:", data);
         setAgents(data);

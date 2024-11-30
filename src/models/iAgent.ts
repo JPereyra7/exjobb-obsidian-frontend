@@ -21,4 +21,4 @@ export interface AgentsListProps {
     success: boolean;
     message: string;
     data: iAgent[];
-  }
+}

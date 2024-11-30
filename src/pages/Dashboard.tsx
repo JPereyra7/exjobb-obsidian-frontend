@@ -14,6 +14,7 @@ import AgentsList from "../components/AgentsList";
 import AddAgentDialog from "../components/AddAgentDialog";
 import EditAgentDialog from "../components/EditAgentDialog";
 import { iAgent } from "../models/iAgent"; // Agent interface
+import { getAgents } from "../services/agentsService";
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
@@ -31,10 +32,12 @@ export const Dashboard = () => {
   const isDesktop = windowWidth >= 1024;
 
   const calculateStats = (data: iListings[]) => {
-    const active = data.filter((listing) => listing.activelisting === true)
-      .length;
-    const inactive = data.filter((listing) => listing.activelisting === false)
-      .length;
+    const active = data.filter(
+      (listing) => listing.activelisting === true
+    ).length;
+    const inactive = data.filter(
+      (listing) => listing.activelisting === false
+    ).length;
 
     setActiveProperties(active);
     setInactiveProperties(inactive);
@@ -55,13 +58,14 @@ export const Dashboard = () => {
     fetchListings();
   }, []);
 
+  //  Fetch Agents
   useEffect(() => {
     const fetchAgents = async () => {
-      const { data, error } = await supabase.from("agents").select("*");
-      if (error) {
-        console.error("Error fetching agents:", error);
-      } else {
-        setAgents(data as iAgent[]);
+      try {
+        const data = await getAgents();
+        setAgents(data);
+      } catch (error) {
+        console.error("Error fetching listings:", error);
       }
     };
 

@@ -16,3 +16,9 @@ export interface AgentsListProps {
     onClose: () => void;
     onAdd: (newAgent: iAgent) => void;
   }
+
+  export interface iAgentsResponse {
+    success: boolean;
+    message: string;
+    data: iAgent[];
+  }

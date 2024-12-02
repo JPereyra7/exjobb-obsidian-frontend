@@ -10,7 +10,7 @@ export const Home = () => {
       {/* Logo Container */}
       <div className="flex justify-center lg:justify-start w-full">
         <img 
-          className="w-40 mt-20 lg:ml-16" 
+          className="w-44 mt-20 lg:ml-16" 
           src={Obsidian} 
           alt="Logo" 
         />

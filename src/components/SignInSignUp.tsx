@@ -107,8 +107,8 @@ export const SignInSignUp = () => {
   console.log(handleRecoverPassword);
 
   return (
-    <div className="flex items-center justify-center min-h-[calc(100vh-140px)] mt-10">
-      <div className="bg-[#030714] shadow-2xl shadow-teal-100 rounded-lg p-8 max-w-sm w-[85%] z-10">
+    <div className="flex items-center justify-center min-h-[calc(100vh-140px)]">
+      <div className="bg-[#030714] shadow-2xl shadow-teal-100 rounded-[5px] p-8 max-w-sm w-[85%] z-10 border-solid border-[1px] border-slate-800">
         <h2 className="text-center text-xl font-semibold mb-6 font text-gray-300">
           {isSignUp ? "Create an account" : "Sign In"}
         </h2>
@@ -190,7 +190,7 @@ export const SignInSignUp = () => {
                   Sign Up
                 </button>
               </p>
-              <p>
+              {/* <p>
                 <button
                   onClick={navigateDashboard}
                   className="text-blue-500 hover:underline"
@@ -198,7 +198,7 @@ export const SignInSignUp = () => {
                 >
                   Forgot Password?
                 </button>
-              </p>
+              </p> */}
             </>
           )}
         </div>

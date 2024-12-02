@@ -23,9 +23,7 @@ import { RiAddBoxLine } from "react-icons/ri";
 import "../styles/sidebar.css";
 import {
   HiChartPie,
-  HiInbox,
-  HiShoppingBag,
-  HiTable,
+  HiChat,
   HiUser,
 } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -219,6 +217,14 @@ const NavigationMenu = ({
     },
   };
 
+  const navigatetoInactive = () => {
+    navigate("/inactive")
+  }
+
+  const navigatetoDashboard = () => {
+    navigate("/dashboard")
+  }
+
   return (
     <>
       {/* Top Navbar */}
@@ -363,9 +369,11 @@ const NavigationMenu = ({
           >
             <Sidebar.Items>
               <Sidebar.ItemGroup>
-                <Sidebar.Item href="#" icon={HiChartPie}>
+                <div onClick={navigatetoDashboard} className="cursor-pointer">
+                <Sidebar.Item icon={HiChartPie}>
                   {isSidebarOpen && "Dashboard"}
                 </Sidebar.Item>
+                </div>
 
                 {isSidebarOpen ? (
                   <Sidebar.Collapse label="Properties" icon={GoDatabase}>
@@ -376,9 +384,11 @@ const NavigationMenu = ({
                     >
                       New Listing
                     </Sidebar.Item>
+                    <div onClick={navigatetoInactive}>
                     <Sidebar.Item className="cursor-pointer">
                       Inactive Listings
                     </Sidebar.Item>
+                    </div>
                   </Sidebar.Collapse>
                 ) : (
                   <Sidebar.Item icon={GoDatabase} />
@@ -396,21 +406,18 @@ const NavigationMenu = ({
                 ) : (
                   <Sidebar.Item icon={HiUser} />
                 )}
-
-                <Sidebar.Item href="#" icon={HiInbox}>
-                  {isSidebarOpen && "Inbox"}
+                  <div className="cursor-pointer">
+                <Sidebar.Item icon={HiChat}>
+                  {isSidebarOpen && "Chat"}
                 </Sidebar.Item>
-                <Sidebar.Item href="#" icon={HiUser}>
+                  </div>
+                <div className="cursor-pointer" onClick={() => setIsSheetOpen(true)}>
+                <Sidebar.Item icon={HiUser}>
                   {isSidebarOpen && "User Settings"}
                 </Sidebar.Item>
-                <Sidebar.Item href="#" icon={HiShoppingBag}>
-                  {isSidebarOpen && "Products"}
-                </Sidebar.Item>
-                <Sidebar.Item href="#" icon={HiTable}>
-                  {isSidebarOpen && "Sign Up"}
-                </Sidebar.Item>
-                <div onClick={signOut}>
-                  <Sidebar.Item href="#" icon={PiSignOutBold}>
+                </div>
+                <div className="cursor-pointer" onClick={signOut}>
+                  <Sidebar.Item icon={PiSignOutBold}>
                     {isSidebarOpen && "Sign Out"}
                   </Sidebar.Item>
                 </div>

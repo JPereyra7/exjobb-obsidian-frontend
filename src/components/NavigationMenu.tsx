@@ -412,9 +412,11 @@ const NavigationMenu = ({
                 </Sidebar.Item>
                   </div>
                 <div className="cursor-pointer" onClick={() => setIsSheetOpen(true)}>
+                  <div onClick={() => setIsSidebarOpen(false)}>
                 <Sidebar.Item icon={HiUser}>
                   {isSidebarOpen && "User Settings"}
                 </Sidebar.Item>
+                  </div>
                 </div>
                 <div className="cursor-pointer" onClick={signOut}>
                   <Sidebar.Item icon={PiSignOutBold}>

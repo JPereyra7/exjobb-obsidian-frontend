@@ -202,7 +202,7 @@ export const Dashboard = () => {
 
           {/* Main Content */}
           <div
-            className="p-4 overflow-y-auto"
+            className="p-4 overflow-y-auto no-scrollbar"
             style={{
               marginLeft: isDesktop ? (isSidebarOpen ? "16rem" : "4rem") : "0",
               marginTop: "3.5rem", // Adjust according to Navbar's height

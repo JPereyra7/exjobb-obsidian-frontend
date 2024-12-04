@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '../supabaseClient';
 import { iAgent } from '../models/iAgent';
+import '../styles/editagent.css'
 import {
   Dialog,
   DialogContent,
@@ -90,7 +91,7 @@ const EditAgentDialog = ({ agent, onClose, onSave }: EditAgentDialogProps) => {
       <DialogPortal>
         <DialogOverlay className="fixed inset-0 bg-black/50 z-50" />
         <DialogContent className="fixed left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[90vw] md:w-[500px] max-h-[90vh] bg-gradient-to-tr from-[#010102] to-[#1e293b] rounded-lg shadow-lg border border-gray-700 overflow-hidden">
-          <div className="overflow-y-auto max-h-[85vh] p-6">
+          <div className="overflow-y-auto max-h-[85vh] p-6 no-scrollbar">
             <DialogHeader>
               <DialogTitle className="text-xl font-semibold mb-4 text-slate-400 activeFont tracking-normal">
                 Edit Agent

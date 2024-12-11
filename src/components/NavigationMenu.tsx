@@ -23,7 +23,6 @@ import { RiAddBoxLine } from "react-icons/ri";
 import "../styles/sidebar.css";
 import {
   HiChartPie,
-  HiChat,
   HiUser,
 } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -406,11 +405,6 @@ const NavigationMenu = ({
                 ) : (
                   <Sidebar.Item icon={HiUser} />
                 )}
-                  <div className="cursor-pointer">
-                <Sidebar.Item icon={HiChat}>
-                  {isSidebarOpen && "Chat"}
-                </Sidebar.Item>
-                  </div>
                 <div className="cursor-pointer" onClick={() => setIsSheetOpen(true)}>
                   <div onClick={() => setIsSidebarOpen(false)}>
                 <Sidebar.Item icon={HiUser}>

@@ -13,8 +13,9 @@ import AddListingDialog from "../components/AddListingDialog";
 import AgentsList from "../components/AgentsList";
 import AddAgentDialog from "../components/AddAgentDialog";
 import EditAgentDialog from "../components/EditAgentDialog";
-import { iAgent } from "../models/iAgent"; // Agent interface
+import { iAgent } from "../models/iAgent";
 import { getAgents } from "../services/agentsService";
+import { toast } from "sonner";
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
@@ -138,7 +139,8 @@ export const Dashboard = () => {
           }
           return listing;
         });
-        // Update the stats
+        // Update the stats & add toaster message
+        toast.success('Property delisted')
         calculateStats(updatedListings);
         return updatedListings;
       });

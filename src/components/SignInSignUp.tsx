@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { toast } from "sonner";
 import { supabase } from "../supabaseClient";
-import '../styles/home.css'
+import "../styles/home.css";
 
 export const SignInSignUp = () => {
   const navigate = useNavigate();
@@ -17,34 +17,35 @@ export const SignInSignUp = () => {
     navigate("/dashboard");
   };
 
+  //Sign up function
   const handleSignUp = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     if (!fullName.trim()) {
       toast.error("Full name is required");
       setLoading(false);
       return;
     }
-  
+
     try {
       const [firstname, ...surnameParts] = fullName.trim().split(" ");
       const surname = surnameParts.join(" ");
-  
+
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
       });
-  
+
       if (error) throw error;
-  
+
       if (!data.user) {
         throw new Error("Sign-up successful, but no user returned");
       }
-  
+
       console.log("Sign up successful, creating profile for:", data.user.id);
-  
+
       const { error: profileError } = await supabase.from("users").insert({
         id: data.user.id,
         email,
@@ -52,12 +53,12 @@ export const SignInSignUp = () => {
         surname,
         created_at: new Date().toISOString(),
       });
-  
+
       if (profileError) throw profileError;
-  
+
       console.log("Profile created successfully for:", data.user.id);
       toast.success("Account created successfully! Please log in.");
-  
+
       setEmail("");
       setPassword("");
       setFullName("");
@@ -71,19 +72,21 @@ export const SignInSignUp = () => {
     }
   };
 
+  // Sign in function
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError(null);
-  
+
     try {
+      //uses email and password as criteria using supabase
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
-  
+
       if (error) throw error;
-  
+
       if (data.user) {
         console.log("Sign in successful:", data.user);
         toast.success("Signed in successfully!");
@@ -103,7 +106,7 @@ export const SignInSignUp = () => {
   const handleRecoverPassword = () => {
     navigate("/recover-password");
   };
-  
+
   console.log(handleRecoverPassword);
 
   return (
@@ -190,15 +193,6 @@ export const SignInSignUp = () => {
                   Sign Up
                 </button>
               </p>
-              {/* <p>
-                <button
-                  onClick={navigateDashboard}
-                  className="text-blue-500 hover:underline"
-                  disabled={loading}
-                >
-                  Forgot Password?
-                </button>
-              </p> */}
             </>
           )}
         </div>

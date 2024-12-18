@@ -8,7 +8,7 @@ This is my exam project called Obsidian. I built a headless cms for a fictional 
 
 || Frontend ||
 
-[![My Skills](https://skillicons.dev/icons?i=react,ts,tailwindcss,electron,vscode)](https://skillicons.dev)
+[![My Skills](https://skillicons.dev/icons?i=react,ts,tailwindcss,electron,jest,vscode)](https://skillicons.dev)
 
 || Backend ||
 

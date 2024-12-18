@@ -25,6 +25,7 @@ Electron.js repo: https://github.com/JPereyra7/exjobb-obsidian-desktop-app
 Real estate website: https://github.com/JPereyra7/exjobb-obsidian-customer-frontend
 
 API links:
+
 Listings: https://obsidian-cms-backend.netlify.app/listings
 
 Agents: https://obsidian-cms-backend.netlify.app/agents

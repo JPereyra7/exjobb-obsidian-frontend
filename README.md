@@ -1,51 +1,20 @@
-# React + TypeScript + Vite
+# Obsidian CMS
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Url 🔗: https://exjobb-obsidian-frontend.netlify.app
 
-Currently, two official plugins are available:
+This is my exam project called Obsidian. I built a headless cms for a fictional Real Estate Agency called "Lillard & Co". The idea behind this cms was to give the owner and employees of Lillard & Co a way to manage their real estate listings, and by using Obsidian they will be able to CRUD their data. This project was later converted into a desktop app using Electron.js.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
 
-## Expanding the ESLint configuration
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+|| Frontend ||
 
-- Configure the top-level `parserOptions` property like this:
+[![My Skills](https://skillicons.dev/icons?i=js,react,tailwindcss,electron,vscode)](https://skillicons.dev)
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+|| Backend ||
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+[![My Skills](https://skillicons.dev/icons?i=js,nodejs,express,supabase)](https://skillicons.dev)
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+|| Host ||
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
-# exjobb-obsidian-frontend
+[![My Skills](https://skillicons.dev/icons?i=netlify)](https://skillicons.dev)
+

@@ -34,7 +34,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
 
   useEffect(() => {
     // Fetch categories my Supabase db
-    setCategories(['villas', 'spain', 'apartments', 'new_releases']);
+    setCategories(['villas', 'spain', 'apartments']);
   }, []);
 
   const handleAddListing = async () => {

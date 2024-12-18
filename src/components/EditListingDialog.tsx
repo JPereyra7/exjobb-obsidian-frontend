@@ -35,7 +35,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
 
   useEffect(() => {
     // Fetching my categories from Supabase
-    setCategories(['villas', 'spain', 'apartments', 'new_releases']);
+    setCategories(['villas', 'spain', 'apartments']);
   }, []);
 
   useEffect(() => {

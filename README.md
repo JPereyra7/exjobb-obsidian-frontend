@@ -26,4 +26,5 @@ Real estate website: https://github.com/JPereyra7/exjobb-obsidian-customer-front
 
 API links:
 Listings: https://obsidian-cms-backend.netlify.app/listings
+
 Agents: https://obsidian-cms-backend.netlify.app/agents

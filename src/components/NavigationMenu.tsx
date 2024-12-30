@@ -149,6 +149,7 @@ const NavigationMenu = ({
         setOriginalFirstName(firstName);
         setOriginalLastName(lastName);
         setIsSheetOpen(false);
+        setIsSidebarOpen(true);
       }
     }
   };

@@ -155,6 +155,7 @@ const NavigationMenu = ({
 
   const handleCancel = () => {
     setIsSheetOpen(false);
+    setIsSidebarOpen(true);
   };
 
   const signOut = () => {

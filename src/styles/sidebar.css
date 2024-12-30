@@ -5,6 +5,7 @@
     font-family: "League Spartan", sans-serif;
 }
 
+/* Used these to take out the gray built in bar */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

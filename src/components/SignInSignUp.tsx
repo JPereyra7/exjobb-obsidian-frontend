@@ -103,12 +103,6 @@ export const SignInSignUp = () => {
     }
   };
 
-  const handleRecoverPassword = () => {
-    navigate("/recover-password");
-  };
-
-  console.log(handleRecoverPassword);
-
   return (
     <div className="flex items-center justify-center min-h-[calc(100vh-140px)]">
       <div className="bg-[#030714] shadow-2xl shadow-teal-100 rounded-[5px] p-8 max-w-sm w-[85%] z-10 border-solid border-[1px] border-slate-800">

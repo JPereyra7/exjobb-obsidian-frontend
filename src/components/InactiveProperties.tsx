@@ -20,7 +20,9 @@ const InactiveProperties = ({
   const deleteListing = async (propertyId: string) => {
     try {
       await handleDelete(propertyId);
-      toast.success('Successfully deleted property');
+      //Uncomment this in the future
+      // toast.success('Successfully deleted property');
+      toast.warning('Disabled Operation on this Demo');
     } catch (error) {
       console.error("Error deleting property:", error);
       toast.error('Failed to delete item');

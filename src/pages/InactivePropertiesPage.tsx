@@ -108,6 +108,11 @@ export const InactivePropertiesPage = () => {
     }
   };
 
+  //Used a demo function for this demo - remove for future use!
+  const handleDeleteDemo = () => {
+    console.log('Disabled Operation on this Demo');
+  }
+
   const handleDelete = async (propertyId: string) => {
     try {
       const { error } = await supabase
@@ -127,6 +132,9 @@ export const InactivePropertiesPage = () => {
       console.error("Error deleting property:", error);
     }
   };
+  //Also remove this obviously!
+  console.log(handleDelete);
+  
 
   useEffect(() => {
     calculateStats(listings);
@@ -219,7 +227,7 @@ export const InactivePropertiesPage = () => {
           listings={listings}
           handleEditButtonClick={handleEditButtonClick}
           relistFunction={relistFunction}
-          handleDelete={handleDelete}
+          handleDelete={handleDeleteDemo}
         />
       </div>
     </div>

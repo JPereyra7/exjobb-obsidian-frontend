@@ -39,6 +39,12 @@ const AddAgentDialog = ({ onClose, onAdd }: AddAgentDialogProps) => {
     }
   };
 
+  //Use this for DEMO use!
+  const addAgentDemo = () => {
+    toast.warning('Disabled Operation onn this demo')
+  }
+
+  // Use this function below if used in future projects 🤔
   const addAgent = async () => {
     try {
       if (!firstname || !surname || !email || !imageFile) {
@@ -82,6 +88,8 @@ const AddAgentDialog = ({ onClose, onAdd }: AddAgentDialogProps) => {
       toast.error('Error adding agent');
     }
   };
+console.log(addAgent);
+
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -157,7 +165,7 @@ const AddAgentDialog = ({ onClose, onAdd }: AddAgentDialogProps) => {
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                onClick={addAgent}
+                onClick={addAgentDemo}
               >
                 Save
               </button>

@@ -31,6 +31,11 @@ const EditAgentDialog = ({ agent, onClose, onSave }: EditAgentDialogProps) => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [agentImage, setAgentImage] = useState<string>(agent.agentimage);
 
+  //Demo function for public demo! Remove if Obsidian will ever be used
+  const saveEditedAgentDemo = () => {
+    toast.warning('Disabled Operation on this Demo')
+  }
+
   const saveEditedAgent = async () => {
     try {
       let imageUrl = agent.agentimage;
@@ -85,6 +90,8 @@ const EditAgentDialog = ({ agent, onClose, onSave }: EditAgentDialogProps) => {
       setAgentImage(imageUrl);
     }
   };
+  console.log(saveEditedAgent);
+  
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -160,7 +167,7 @@ const EditAgentDialog = ({ agent, onClose, onSave }: EditAgentDialogProps) => {
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                onClick={saveEditedAgent}
+                onClick={saveEditedAgentDemo}
               >
                 Save
               </button>

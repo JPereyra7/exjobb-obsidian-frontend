@@ -75,23 +75,27 @@ export const Dashboard = () => {
     fetchAgents();
   }, []);
 
-  const deleteAgent = async (agentId: string) => {
-    try {
-      const { error } = await supabase
-        .from("agents")
-        .delete()
-        .eq("id", agentId);
-      if (error) throw error;
+const deleteAgent = () => {
+  toast.warning('Disabled Operation on this demo')
+}
 
-      setAgents((prevAgents) =>
-        prevAgents.filter((agent) => agent.id !== agentId)
-      );
+  // const deleteAgent = async (agentId: string) => {
+  //   try {
+  //     const { error } = await supabase
+  //       .from("agents")
+  //       .delete()
+  //       .eq("id", agentId);
+  //     if (error) throw error;
 
-      console.log("Agent deleted successfully");
-    } catch (error) {
-      console.error("Error deleting agent:", error);
-    }
-  };
+  //     setAgents((prevAgents) =>
+  //       prevAgents.filter((agent) => agent.id !== agentId)
+  //     );
+
+  //     console.log("Agent deleted successfully");
+  //   } catch (error) {
+  //     console.error("Error deleting agent:", error);
+  //   }
+  // };
 
   const handleEditAgentButtonClick = (agent: iAgent) => {
     setEditingAgent(agent);

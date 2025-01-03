@@ -21,10 +21,7 @@ import { PiSignOutBold } from "react-icons/pi";
 import { GoDatabase } from "react-icons/go";
 import { RiAddBoxLine } from "react-icons/ri";
 import "../styles/sidebar.css";
-import {
-  HiChartPie,
-  HiUser,
-} from "react-icons/hi";
+import { HiChartPie, HiUser } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
 import { CustomFlowbiteTheme } from "flowbite-react";
 import { NavigationMenuProps } from "../models/NavbarProps";
@@ -135,6 +132,11 @@ const NavigationMenu = ({
     }
   };
 
+  //Demo function for public demo! Remove if Obsidian will ever be used
+  const handleSaveDemo = () => {
+    toast.warning("Disabled Operation on this Demo");
+  };
+
   const handleSave = async () => {
     if (user) {
       const { error } = await supabase
@@ -153,6 +155,8 @@ const NavigationMenu = ({
       }
     }
   };
+  console.log(handleSave);
+  
 
   const handleCancel = () => {
     setIsSheetOpen(false);
@@ -219,12 +223,12 @@ const NavigationMenu = ({
   };
 
   const navigatetoInactive = () => {
-    navigate("/inactive")
-  }
+    navigate("/inactive");
+  };
 
   const navigatetoDashboard = () => {
-    navigate("/dashboard")
-  }
+    navigate("/dashboard");
+  };
 
   return (
     <>
@@ -334,7 +338,7 @@ const NavigationMenu = ({
                 <div className="mt-6 flex justify-end space-x-2 w-full">
                   <button
                     className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                    onClick={handleSave}
+                    onClick={handleSaveDemo}
                   >
                     Save
                   </button>
@@ -371,9 +375,9 @@ const NavigationMenu = ({
             <Sidebar.Items>
               <Sidebar.ItemGroup>
                 <div onClick={navigatetoDashboard} className="cursor-pointer">
-                <Sidebar.Item icon={HiChartPie}>
-                  {isSidebarOpen && "Dashboard"}
-                </Sidebar.Item>
+                  <Sidebar.Item icon={HiChartPie}>
+                    {isSidebarOpen && "Dashboard"}
+                  </Sidebar.Item>
                 </div>
 
                 {isSidebarOpen ? (
@@ -386,9 +390,9 @@ const NavigationMenu = ({
                       New Listing
                     </Sidebar.Item>
                     <div onClick={navigatetoInactive}>
-                    <Sidebar.Item className="cursor-pointer">
-                      Inactive Listings
-                    </Sidebar.Item>
+                      <Sidebar.Item className="cursor-pointer">
+                        Inactive Listings
+                      </Sidebar.Item>
                     </div>
                   </Sidebar.Collapse>
                 ) : (
@@ -407,11 +411,14 @@ const NavigationMenu = ({
                 ) : (
                   <Sidebar.Item icon={HiUser} />
                 )}
-                <div className="cursor-pointer" onClick={() => setIsSheetOpen(true)}>
+                <div
+                  className="cursor-pointer"
+                  onClick={() => setIsSheetOpen(true)}
+                >
                   <div onClick={() => setIsSidebarOpen(false)}>
-                <Sidebar.Item icon={HiUser}>
-                  {isSidebarOpen && "User Settings"}
-                </Sidebar.Item>
+                    <Sidebar.Item icon={HiUser}>
+                      {isSidebarOpen && "User Settings"}
+                    </Sidebar.Item>
                   </div>
                 </div>
                 <div className="cursor-pointer" onClick={signOut}>

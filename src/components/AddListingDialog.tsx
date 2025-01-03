@@ -37,6 +37,11 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
     setCategories(['villas', 'spain', 'apartments']);
   }, []);
 
+    //Use this for DEMO use!
+    const handleAddListingDemo = () => {
+      toast.warning('Disabled Operation on this demo')
+    }
+
   const handleAddListing = async () => {
     try {
       // Validate inputs
@@ -121,6 +126,8 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
       toast.error('Error adding new listing');
     }
   };
+  console.log(handleAddListing);
+  
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -228,7 +235,7 @@ const AddListingDialog = ({ onClose, onAdd }: AddListingDialogProps) => {
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                onClick={handleAddListing}
+                onClick={handleAddListingDemo}
               >
                 Save
               </button>

@@ -65,6 +65,11 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
     }));
   };
 
+    //Demo function for public demo! Remove if Obsidian will ever be used
+    const saveEditedPropertyDemo = () => {
+      toast.warning('Disabled Operation on this Demo')
+    }
+
   const saveEditedProperty = async () => {
     try {
       const updatedData = {
@@ -88,6 +93,8 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
       toast.error('Error updating property');
     }
   };
+  console.log(saveEditedProperty);
+  
 
   return (
     <Dialog open onOpenChange={onClose}>
@@ -193,7 +200,7 @@ const EditListingDialog = ({ listing, onClose, onSave }: EditListingDialogProps)
             <div className="mt-6 flex justify-end space-x-2">
               <button
                 className="bg-teal-600 text-white px-4 py-2 rounded hover:bg-teal-800"
-                onClick={saveEditedProperty}
+                onClick={saveEditedPropertyDemo}
               >
                 Save
               </button>

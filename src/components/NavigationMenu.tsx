@@ -20,6 +20,7 @@ import { Sidebar } from "flowbite-react";
 import { PiSignOutBold } from "react-icons/pi";
 import { GoDatabase } from "react-icons/go";
 import { RiAddBoxLine } from "react-icons/ri";
+import { IoChatbubblesOutline } from "react-icons/io5";
 import "../styles/sidebar.css";
 import { HiChartPie, HiUser } from "react-icons/hi";
 import { useNavigate } from "react-router-dom";
@@ -166,6 +167,11 @@ const NavigationMenu = ({
   const signOut = () => {
     navigate("/");
   };
+
+  const chatRoute = () => {
+    navigate("/chat");
+    setIsSidebarOpen(false);
+  }
 
   // Custom theme for Flowbite's sidebar
   const customTheme: CustomFlowbiteTheme["sidebar"] = {
@@ -411,6 +417,16 @@ const NavigationMenu = ({
                 ) : (
                   <Sidebar.Item icon={HiUser} />
                 )}
+                <div
+                  className="cursor-pointer"
+                  onClick={() => setIsSheetOpen(true)}
+                >
+                  <div onClick={chatRoute}>
+                    <Sidebar.Item icon={IoChatbubblesOutline}>
+                      {isSidebarOpen && "Chat"}
+                    </Sidebar.Item>
+                  </div>
+                </div>
                 <div
                   className="cursor-pointer"
                   onClick={() => setIsSheetOpen(true)}

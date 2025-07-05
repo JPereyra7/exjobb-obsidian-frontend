@@ -5,7 +5,6 @@ import { getListings } from "../services/listingsService";
 import { DashboardStats } from "../components/DashboardStats";
 import { DollarSign, Power, House, PowerOff } from "lucide-react";
 import { supabase } from "../supabaseClient";
-import vindictiveLogo from "../assets/vindictive-white-vector.png";
 import { iListings } from "../models/iListings";
 import ActiveProperties from "../components/ActiveProperties";
 import EditListingDialog from "../components/EditListingDialog";
@@ -16,6 +15,7 @@ import EditAgentDialog from "../components/EditAgentDialog";
 import { iAgent } from "../models/iAgent";
 import { getAgents } from "../services/agentsService";
 import { toast } from "sonner";
+import { ObsidianSpinner } from "../components/ObsidianSpinner";
 
 export const Dashboard = () => {
   const [listings, setListings] = useState<iListings[]>([]);
@@ -187,15 +187,7 @@ const deleteAgent = () => {
   return (
     <div className="min-h-screen bg-[#222e40]">
       {isLoading ? (
-        <div className="spinner-container">
-          <div className="spinner-content">
-            <img src={vindictiveLogo} className="obsidian-spinner" alt="" />
-            <div className="loading-bar-container">
-              <div className="loading-bar"></div>
-            </div>
-            <p className="loading-text">Initializing...</p>
-          </div>
-        </div>
+        <ObsidianSpinner />
       ) : (
         <>
           {/* Navigation Menu */}

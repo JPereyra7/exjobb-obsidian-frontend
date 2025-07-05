@@ -3,6 +3,7 @@ import { Layout } from "./pages/Layout";
 import { Home } from "./pages/Home";
 import { Dashboard } from "./pages/Dashboard";
 import { InactivePropertiesPage } from "./pages/InactivePropertiesPage";
+import { Chat } from "./pages/Chat";
 
 export const router = createBrowserRouter([
     {
@@ -21,6 +22,10 @@ export const router = createBrowserRouter([
                 path: "/inactive",
                 element: <InactivePropertiesPage />,
             },
+            {
+                path: "/chat",
+                element: <Chat />,
+            }
         ]
     }
 ])
